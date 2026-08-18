@@ -679,20 +679,39 @@ input:focus:not(:focus-visible) {
   margin: 0 0 8px;
 }
 .note { color: var(--muted); margin: 0 0 20px; }
-.pitems { width: 100%; border-collapse: collapse; font-size: 13px; }
+.pitems {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  table-layout: fixed;
+}
 .pitems th {
   text-align: left;
   font-size: 10px;
   color: var(--muted-2);
   text-transform: uppercase;
   border-bottom: 1px solid var(--line);
-  padding: 8px 0;
+  padding: 8px 6px;
   font-weight: 700;
+  vertical-align: bottom;
 }
 .pitems td {
-  padding: 10px 0;
+  padding: 10px 6px;
   border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  word-wrap: break-word;
 }
+.pitems th:nth-child(1),
+.pitems td:nth-child(1) { width: 40%; text-align: left; }
+.pitems th:nth-child(2),
+.pitems td:nth-child(2) { width: 12%; text-align: right; }
+.pitems th:nth-child(3),
+.pitems td:nth-child(3) { width: 12%; text-align: right; }
+.pitems th:nth-child(4),
+.pitems td:nth-child(4) { width: 18%; text-align: right; }
+.pitems th:nth-child(5),
+.pitems td:nth-child(5) { width: 18%; text-align: right; }
+.pitems .right { text-align: right; }
 .total { width: 240px; margin: 18px 0 26px auto; }
 .total div {
   display: flex;
@@ -919,12 +938,41 @@ input:focus:not(:focus-visible) {
     display: block !important;
     box-shadow: none;
     border: 0;
-    padding: 32px;
+    padding: 24px;
     min-height: 0;
     background: #fff !important;
     color: #111 !important;
   }
-  body { background: #fff; }
+  body { background: #fff; color: #111; }
+
+  /* Full line-item table in PDF — keep all columns aligned */
+  .pitems {
+    table-layout: fixed;
+    width: 100%;
+  }
+  .pitems th:nth-child(3),
+  .pitems td:nth-child(3),
+  .pitems th:nth-child(4),
+  .pitems td:nth-child(4) {
+    display: table-cell !important;
+  }
+  .pitems th:nth-child(1),
+  .pitems td:nth-child(1) { width: 36%; text-align: left !important; }
+  .pitems th:nth-child(2),
+  .pitems td:nth-child(2) { width: 10%; text-align: right !important; }
+  .pitems th:nth-child(3),
+  .pitems td:nth-child(3) { width: 12%; text-align: right !important; }
+  .pitems th:nth-child(4),
+  .pitems td:nth-child(4) { width: 20%; text-align: right !important; }
+  .pitems th:nth-child(5),
+  .pitems td:nth-child(5) { width: 22%; text-align: right !important; }
+  .pitems th, .pitems td {
+    padding: 8px 6px !important;
+    color: #111 !important;
+    border-bottom: 1px solid #ddd !important;
+  }
+  .pitems .right { text-align: right !important; }
+  .total { width: 260px; }
 }
 </style>
 </head>
@@ -944,7 +992,7 @@ input:focus:not(:focus-visible) {
     </button>
     <div class="side-note">
       <b>Invoicedey V1</b>
-      Private, simple invoicing for independent businesses.
+      Private, local invoicing. Your data stays in this browser.
     </div>
   </aside>
 
@@ -1171,19 +1219,11 @@ input:focus:not(:focus-visible) {
           </label>
           <div class="buttons" style="margin-top:18px;flex-wrap:wrap">
             <button class="button" id="save">Save draft</button>
-            <button class="button" id="send">Mark as sent</button>
-            <button class="button primary" id="sendEmail">Send invoice…</button>
-            <button class="button" id="addPayLink">Add payment link</button>
+            <button class="button primary" id="send">Mark as sent</button>
           </div>
-          <div id="payLinkBox" style="display:none;margin-top:12px;padding:12px 14px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;font-size:13px">
-            <div style="font-weight:600;margin-bottom:6px">Payment link</div>
-            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-              <input id="payLinkUrl" readonly style="flex:1;min-width:180px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text)">
-              <button class="button small" id="copyPayLink" type="button">Copy</button>
-              <a class="button small primary" id="openPayLink" target="_blank" rel="noopener">Open</a>
-            </div>
-          </div>
-          <div id="authStatus" style="margin-top:12px;font-size:12px;color:var(--muted)"></div>
+          <p style="margin-top:14px;font-size:12px;color:var(--muted)">
+            V1 is local-only. Data stays in this browser. Online send &amp; payments coming later.
+          </p>
         </div>
 
         <button class="button preview-toggle" id="togglePreview">Show invoice preview</button>
@@ -1273,39 +1313,6 @@ input:focus:not(:focus-visible) {
   </div>
 </div>
 
-
-<!-- Auth modal -->
-<div class="modalback" id="authModal">
-  <div class="modal">
-    <h2>Log in to Invoicedey Pro</h2>
-    <p>Send invoices and accept online payments. We’ll email you a magic link.</p>
-    <div class="field"><label>Email</label><input id="authEmail" type="email" placeholder="you@company.com"></div>
-    <div class="buttons" style="justify-content:flex-end;margin-top:20px;gap:10px">
-      <button class="button" id="authCancel">Cancel</button>
-      <button class="button primary" id="authSubmit">Send magic link</button>
-    </div>
-    <p id="authMsg" style="color:var(--muted);font-size:13px;margin:14px 0 0;display:none"></p>
-  </div>
-</div>
-
-<!-- Send invoice modal -->
-<div class="modalback" id="sendModal">
-  <div class="modal" style="max-width:480px">
-    <h2>Send invoice</h2>
-    <p>Email this invoice to your client. Requires Pro.</p>
-    <div class="field"><label>To</label><input id="sendTo" type="email" placeholder="client@email.com"></div>
-    <div class="field"><label>Subject</label><input id="sendSubject"></div>
-    <div class="field"><label>Message</label><textarea id="sendMessage" rows="3">Please find your invoice. You can pay online using the link in this email.</textarea></div>
-    <label class="paid-check" style="margin-bottom:14px">
-      <input id="sendIncludePay" type="checkbox" checked> Include payment link
-    </label>
-    <div class="buttons" style="justify-content:flex-end;gap:10px">
-      <button class="button" id="sendCancel">Cancel</button>
-      <button class="button primary" id="sendConfirm">Send invoice</button>
-    </div>
-    <p id="sendMsg" style="color:var(--muted);font-size:13px;margin:14px 0 0;display:none"></p>
-  </div>
-</div>
 
 <div class="toast" id="toast"></div>
 
@@ -1923,298 +1930,6 @@ $('#importBackup').onchange = e => {
         save();
         toast('Backup restored.');
         
-/* =========================================================
-   PHASE B — Supabase Auth, Send, Payment Link
-   Configure these before use:
-   ========================================================= */
-const SUPABASE_URL = 'https://spzrnnqeshejdmnocvut.supabase.co/rest/v1/';
-const SUPABASE_ANON_KEY = '';
-// Optional: load supabase-js from CDN
-let supabaseClient = null;
-let currentUser = null;
-let currentBusiness = null;
-
-function loadSupabase() {
-  return new Promise((resolve, reject) => {
-    if (window.supabase) {
-      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      return resolve(supabaseClient);
-    }
-    const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
-    s.onload = () => {
-      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      resolve(supabaseClient);
-    };
-    s.onerror = reject;
-    document.head.appendChild(s);
-  });
-}
-
-async function refreshAuthUi() {
-  const el = $('#authStatus');
-  if (!el) return;
-  if (!currentUser) {
-    el.innerHTML = 'Local mode · <button class="button text" id="openLogin" type="button" style="padding:0;font-size:12px">Log in for Pro</button>';
-    const btn = $('#openLogin');
-    if (btn) btn.onclick = () => $('#authModal').classList.add('show');
-    return;
-  }
-  const plan = currentBusiness?.plan === 'pro' && currentBusiness?.plan_status === 'active' ? 'Pro' : 'Free';
-  el.innerHTML = `Signed in as ${currentUser.email} · ${plan}` +
-    (plan !== 'Pro' ? ` · <button class="button text" id="upgradePro" type="button" style="padding:0;font-size:12px">Upgrade</button>` : '') +
-    ` · <button class="button text" id="logoutBtn" type="button" style="padding:0;font-size:12px">Log out</button>`;
-  const up = $('#upgradePro');
-  if (up) up.onclick = startProCheckout;
-  const out = $('#logoutBtn');
-  if (out) out.onclick = async () => {
-    await supabaseClient.auth.signOut();
-    currentUser = null;
-    currentBusiness = null;
-    refreshAuthUi();
-    toast('Logged out.');
-  };
-}
-
-async function ensureBusiness() {
-  if (!supabaseClient || !currentUser) return null;
-  let { data } = await supabaseClient.from('businesses').select('*').eq('user_id', currentUser.id).maybeSingle();
-  if (!data) {
-    const profile = db.profile || {};
-    const { data: created, error } = await supabaseClient.from('businesses').insert({
-      user_id: currentUser.id,
-      name: profile.name || 'Your Company',
-      email: profile.email || currentUser.email,
-      phone: profile.phone || '',
-      address: profile.address || '',
-      reporting_currency: profile.reporting || 'USD',
-      tax_id: profile.taxId || '',
-      tax_label: profile.taxLabel || 'Tax',
-      default_tax: profile.defaultTax || 0,
-      invoice_prefix: profile.invoicePrefix || 'INV',
-      next_invoice_number: profile.nextInvoiceNumber || 1,
-      payment_details: profile.paymentDetails || ''
-    }).select().single();
-    if (error) throw error;
-    data = created;
-  }
-  currentBusiness = data;
-  return data;
-}
-
-async function upsertInvoiceCloud(invoice) {
-  if (!supabaseClient || !currentUser || !currentBusiness) return null;
-  const payload = {
-    id: invoice.id,
-    business_id: currentBusiness.id,
-    client_id: invoice.client || null,
-    number: invoice.number,
-    currency: invoice.currency,
-    tax: invoice.tax,
-    issue_date: invoice.issue,
-    due_date: invoice.due,
-    title: invoice.title,
-    note: invoice.note,
-    terms: invoice.terms,
-    status: invoice.status,
-    paid: !!invoice.paid,
-    lines: invoice.lines,
-    subtotal: sub(invoice),
-    tax_amount: tax(invoice),
-    total: total(invoice),
-    payment_link_url: invoice.payment_link_url || null,
-    stripe_session_id: invoice.stripe_session_id || null
-  };
-  const { data, error } = await supabaseClient.from('invoices').upsert(payload).select().single();
-  if (error) throw error;
-  return data;
-}
-
-async function initAuth() {
-  try {
-    if (SUPABASE_URL.includes('YOUR_PROJECT')) {
-      refreshAuthUi();
-      return; // not configured yet
-    }
-    await loadSupabase();
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (session?.user) {
-      currentUser = session.user;
-      await ensureBusiness();
-    }
-    supabaseClient.auth.onAuthStateChange(async (_e, session) => {
-      currentUser = session?.user || null;
-      if (currentUser) await ensureBusiness();
-      else currentBusiness = null;
-      refreshAuthUi();
-    });
-    refreshAuthUi();
-  } catch (e) {
-    console.warn('Auth init skipped', e);
-    refreshAuthUi();
-  }
-}
-
-// Auth modal
-$('#authCancel').onclick = () => $('#authModal').classList.remove('show');
-$('#authSubmit').onclick = async () => {
-  const email = $('#authEmail').value.trim();
-  const msg = $('#authMsg');
-  msg.style.display = 'block';
-  if (!email) { msg.textContent = 'Enter your email.'; return; }
-  if (SUPABASE_URL.includes('YOUR_PROJECT')) {
-    msg.textContent = 'Configure SUPABASE_URL and SUPABASE_ANON_KEY in the script first.';
-    return;
-  }
-  try {
-    await loadSupabase();
-    const { error } = await supabaseClient.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: window.location.href }
-    });
-    if (error) throw error;
-    msg.textContent = 'Check your email for the magic link.';
-  } catch (e) {
-    msg.textContent = e.message || 'Could not send link.';
-  }
-};
-
-// Send modal
-function openSendModal() {
-  if (!edit) return;
-  if (!currentUser) {
-    $('#authModal').classList.add('show');
-    toast('Log in to send invoices.');
-    return;
-  }
-  const c = client(edit.client);
-  $('#sendTo').value = c?.email || '';
-  $('#sendSubject').value = `Invoice ${edit.number} from ${db.profile.name || 'Your Company'}`;
-  $('#sendMsg').style.display = 'none';
-  $('#sendModal').classList.add('show');
-}
-$('#sendCancel').onclick = () => $('#sendModal').classList.remove('show');
-$('#sendConfirm').onclick = async () => {
-  const msg = $('#sendMsg');
-  msg.style.display = 'block';
-  if (!currentUser || !currentBusiness) {
-    msg.textContent = 'Please log in first.';
-    return;
-  }
-  if (currentBusiness.plan !== 'pro' || currentBusiness.plan_status !== 'active') {
-    msg.textContent = 'Pro plan required. Upgrade to send invoices.';
-    return;
-  }
-  try {
-    // Ensure client email on local client record
-    const to = $('#sendTo').value.trim();
-    if (!to) { msg.textContent = 'Client email is required.'; return; }
-    if (edit.client) {
-      const c = db.clients.find(x => x.id === edit.client);
-      if (c) c.email = to;
-      save();
-    }
-    // Optionally create payment link first
-    if ($('#sendIncludePay').checked && !edit.payment_link_url) {
-      await createPaymentLink(true);
-    }
-    await upsertInvoiceCloud(edit);
-    const { data, error } = await supabaseClient.functions.invoke('send-invoice', {
-      body: { invoice_id: edit.id, message: $('#sendMessage').value.trim() }
-    });
-    if (error) throw error;
-    if (data?.error) throw new Error(data.error);
-    edit.status = 'Sent';
-    persist('Sent');
-    $('#sendModal').classList.remove('show');
-    toast('Invoice sent.');
-  } catch (e) {
-    msg.textContent = e.message || 'Send failed.';
-  }
-};
-
-async function createPaymentLink(silent) {
-  if (!edit) return;
-  if (!currentUser) {
-    $('#authModal').classList.add('show');
-    if (!silent) toast('Log in to create payment links.');
-    return;
-  }
-  if (!currentBusiness || currentBusiness.plan !== 'pro' || currentBusiness.plan_status !== 'active') {
-    if (!silent) toast('Pro plan required for payment links.');
-    return;
-  }
-  try {
-    await upsertInvoiceCloud(edit);
-    const { data, error } = await supabaseClient.functions.invoke('create-payment-link', {
-      body: { invoice_id: edit.id }
-    });
-    if (error) throw error;
-    if (data?.error) throw new Error(data.error);
-    edit.payment_link_url = data.url;
-    // reflect in local db
-    const idx = db.invoices.findIndex(i => i.id === edit.id);
-    if (idx >= 0) db.invoices[idx].payment_link_url = data.url;
-    else {
-      // not saved yet — keep on edit only
-    }
-    save();
-    $('#payLinkBox').style.display = 'block';
-    $('#payLinkUrl').value = data.url;
-    $('#openPayLink').href = data.url;
-    if (!silent) toast('Payment link created.');
-  } catch (e) {
-    if (!silent) toast(e.message || 'Could not create payment link.');
-    throw e;
-  }
-}
-
-$('#sendEmail').onclick = openSendModal;
-$('#addPayLink').onclick = () => createPaymentLink(false);
-$('#copyPayLink').onclick = async () => {
-  const url = $('#payLinkUrl').value;
-  if (!url) return;
-  try {
-    await navigator.clipboard.writeText(url);
-    toast('Link copied.');
-  } catch {
-    toast('Could not copy.');
-  }
-};
-
-async function startProCheckout() {
-  if (!currentUser) {
-    $('#authModal').classList.add('show');
-    return;
-  }
-  try {
-    const { data, error } = await supabaseClient.functions.invoke('create-pro-checkout', {
-      body: {}
-    });
-    if (error) throw error;
-    if (data?.error) throw new Error(data.error);
-    if (data?.url) window.location.href = data.url;
-  } catch (e) {
-    toast(e.message || 'Checkout failed.');
-  }
-}
-
-// Show pay link box when editing invoice that already has one
-const _origEditor = editor;
-editor = function() {
-  _origEditor();
-  if (edit?.payment_link_url) {
-    $('#payLinkBox').style.display = 'block';
-    $('#payLinkUrl').value = edit.payment_link_url;
-    $('#openPayLink').href = edit.payment_link_url;
-  } else {
-    $('#payLinkBox').style.display = 'none';
-  }
-  refreshAuthUi();
-};
-
-initAuth();
-
 switchTo('dashboard');
       });
     } catch {
