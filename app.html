@@ -452,6 +452,86 @@ input:focus:not(:focus-visible) {
   color: var(--muted);
 }
 .badge.paid { background: var(--green-bg); color: var(--green-text); }
+.badge.partial { background: #FFF7ED; color: #C2410C; }
+[data-theme="dark"] .badge.partial { background: #431407; color: #FDBA74; }
+.payments-box {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-2);
+  overflow: hidden;
+}
+.payments-box h4 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.pay-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.pay-summary span {
+  display: block;
+  padding: 10px 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+.pay-summary b {
+  display: block;
+  margin-top: 2px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.2px;
+}
+.pay-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: end;
+}
+.pay-row .field {
+  margin: 0;
+  min-width: 0;
+}
+.pay-row .field input,
+.pay-row .field select {
+  width: 100%;
+  min-width: 0;
+  font-size: 14px;
+  padding: 11px 12px;
+}
+.pay-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+.pay-row-actions .button {
+  flex: 1 1 auto;
+  min-width: 120px;
+  text-align: center;
+}
+.pay-list { margin: 12px 0 0; padding: 0; list-style: none; }
+.pay-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+.pay-list .pay-actions { display: flex; gap: 6px; flex-shrink: 0; }
 .badge.sent { background: var(--blue-soft); color: var(--blue-soft-text); }
 .badge.overdue { background: var(--red-bg); color: var(--red-text); }
 .badge.draft { background: var(--panel-2); color: var(--muted); }
@@ -460,10 +540,86 @@ input:focus:not(:focus-visible) {
   background: var(--panel);
   border: 1px dashed var(--line-strong);
   border-radius: var(--radius);
-  padding: 48px 24px;
+  padding: 48px 28px;
   text-align: center;
   color: var(--muted);
 }
+.empty-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  border-radius: 14px;
+  background: var(--blue-soft);
+  color: var(--blue);
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  font-weight: 700;
+}
+.empty h3 {
+  margin: 0 0 8px;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+.empty p {
+  margin: 0 auto 20px;
+  max-width: 360px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.empty .empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+.empty .steps {
+  text-align: left;
+  max-width: 320px;
+  margin: 0 auto 22px;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+.empty .steps li {
+  position: relative;
+  padding: 8px 0 8px 36px;
+  font-size: 13px;
+  color: var(--text-secondary, var(--text));
+  border-bottom: 1px solid var(--line);
+}
+.empty .steps li:last-child { border-bottom: 0; }
+.empty .steps li::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--blue-soft);
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+.trust-strip {
+  margin-top: 20px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+.trust-strip b { color: var(--text); }
+
 
 /* =========================================================
    COMPONENTS — Insights / charts
@@ -519,42 +675,47 @@ input:focus:not(:focus-visible) {
   display: grid;
   grid-template-columns: minmax(320px, 0.9fr) minmax(380px, 1.1fr);
   gap: 24px;
+  align-items: start;
 }
-.form, .preview {
+.form {
   background: var(--panel);
-  border-radius: var(--radius);
-  padding: 24px;
   border: 1px solid var(--line);
-  box-shadow: var(--shadow);
-  transition: background var(--ease), border-color var(--ease);
+  border-radius: var(--radius);
+  padding: 28px;
+  min-width: 0;
 }
 .form h2 {
-  margin: 0 0 20px;
-  font-size: 18px;
-  font-weight: 700;
+  margin: 0 0 18px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
 }
-.field { margin-bottom: 14px; }
+.field {
+  margin-bottom: 14px;
+}
 .field label {
   display: block;
-  color: var(--muted);
   font-size: 11px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.4px;
-  font-weight: 700;
+  color: var(--muted);
   margin-bottom: 6px;
 }
 .field input,
 .field textarea,
 .field select {
-  color: var(--text);
   width: 100%;
-  background: var(--panel);
+  padding: 11px 12px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  padding: 11px 13px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
   outline: none;
-  transition: border-color var(--ease), box-shadow var(--ease), background var(--ease);
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
+.field textarea { resize: vertical; min-height: 64px; }
 .field input:focus,
 .field textarea:focus,
 .field select:focus {
@@ -592,6 +753,20 @@ input:focus:not(:focus-visible) {
 .three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 
 /* Line items */
+.line-header {
+  display: grid;
+  grid-template-columns: minmax(100px, 1.6fr) 60px 72px 84px 84px 28px;
+  gap: 8px;
+  margin: 8px 0 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--muted);
+}
+.line-header span:nth-child(2),
+.line-header span:nth-child(4),
+.line-header span:nth-child(5) { text-align: right; }
 .line {
   display: grid;
   grid-template-columns: minmax(100px, 1.6fr) 60px 72px 84px 84px 28px;
@@ -607,8 +782,9 @@ input:focus:not(:focus-visible) {
   border-radius: var(--radius-sm);
   padding: 10px;
   color: var(--text);
+  font: inherit;
   outline: none;
-  transition: border-color var(--ease), box-shadow var(--ease);
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 .line input:focus {
   border-color: var(--blue);
@@ -628,7 +804,9 @@ input:focus:not(:focus-visible) {
   font-size: 20px;
   line-height: 1;
   padding: 8px 0 0;
-  transition: color var(--ease);
+  background: none;
+  border: 0;
+  cursor: pointer;
 }
 .remove:hover { color: var(--red); }
 .add {
@@ -636,113 +814,131 @@ input:focus:not(:focus-visible) {
   font-weight: 700;
   padding: 10px 0 14px;
   font-size: 13px;
+  background: none;
+  border: 0;
+  cursor: pointer;
 }
 .add:hover { text-decoration: underline; }
-.line-header {
-  display: grid;
-  grid-template-columns: minmax(100px, 1.6fr) 60px 72px 84px 84px 28px;
-  gap: 8px;
-  margin-bottom: 4px;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  color: var(--muted);
-  font-weight: 700;
-}
-.line-header span:nth-child(2),
-.line-header span:nth-child(4),
-.line-header span:nth-child(5) { text-align: right; }
 
-.paid-check {
-  background: var(--panel-2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  font-weight: 600;
-}
-.paid-check input {
-  accent-color: var(--blue);
-  width: 16px;
-  height: 16px;
-}
-
-/* =========================================================
-   COMPONENTS — Invoice preview
-   ========================================================= */
+/* Invoice document preview (paper) */
 .preview {
-  background: var(--panel);
-  color: var(--text);
-  min-height: 680px;
-  padding: 36px;
-  box-shadow: var(--shadow-md);
+  background: #fff;
+  color: #0f172a;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 48px 44px;
+  min-height: 640px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+  min-width: 0;
+}
+[data-theme="dark"] .preview {
+  background: #fff;
+  color: #0f172a;
+  border-color: #e2e8f0;
 }
 .phead {
   display: flex;
   justify-content: space-between;
-  border-bottom: 3px solid var(--blue);
-  padding-bottom: 20px;
+  align-items: flex-start;
+  gap: 24px;
+  border-bottom: 2px solid #2467E3;
+  padding-bottom: 22px;
+  margin-bottom: 4px;
 }
-.pbrand { font-size: 20px; font-weight: 800; color: #111; }
+.pbrand {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.4px;
+  line-height: 1.2;
+}
 .pbrand em { font-style: normal; color: inherit; }
+#pContact {
+  color: #64748b !important;
+  font-size: 12px !important;
+  line-height: 1.55 !important;
+  margin-top: 8px !important;
+}
 .ptitle {
-  color: var(--blue);
-  font-size: 11px;
+  color: #2467E3;
+  font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 1.2px;
+  letter-spacing: 1.6px;
   text-align: right;
 }
 .pnum {
-  font: 11px ui-monospace, SFMono-Regular, Menlo, monospace;
-  color: var(--muted-2);
+  font: 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: #64748b;
   margin-top: 6px;
   text-align: right;
+  line-height: 1.4;
 }
 .parties {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  padding: 22px 0;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 28px;
+  padding: 28px 0 24px;
+}
+.parties b {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  display: block;
+  margin-top: 2px;
 }
 .cap {
   font-size: 10px;
-  color: var(--muted-2);
+  color: #94a3b8;
   text-transform: uppercase;
   font-weight: 700;
-  letter-spacing: 0.8px;
-  margin-bottom: 4px;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
 }
 .project {
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.4px;
-  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin: 0 0 10px;
+  color: #0f172a;
+  line-height: 1.25;
 }
-.note { color: var(--muted); margin: 0 0 20px; }
+.note {
+  color: #64748b;
+  margin: 0 0 28px;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
 .pitems {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
   table-layout: fixed;
+  margin-bottom: 8px;
 }
 .pitems th {
   text-align: left;
   font-size: 10px;
-  color: var(--muted-2);
+  color: #94a3b8;
   text-transform: uppercase;
-  border-bottom: 1px solid var(--line);
-  padding: 8px 6px;
+  letter-spacing: 0.6px;
+  border-bottom: 2px solid #e2e8f0;
+  padding: 10px 8px;
   font-weight: 700;
   vertical-align: bottom;
 }
 .pitems td {
-  padding: 10px 6px;
-  border-bottom: 1px solid var(--line);
+  padding: 14px 8px;
+  border-bottom: 1px solid #f1f5f9;
   vertical-align: top;
   word-wrap: break-word;
+  color: #0f172a;
+}
+.pitems tbody tr:last-child td {
+  border-bottom: 1px solid #e2e8f0;
 }
 .pitems th:nth-child(1),
 .pitems td:nth-child(1) { width: 40%; text-align: left; }
@@ -753,29 +949,45 @@ input:focus:not(:focus-visible) {
 .pitems th:nth-child(4),
 .pitems td:nth-child(4) { width: 18%; text-align: right; }
 .pitems th:nth-child(5),
-.pitems td:nth-child(5) { width: 18%; text-align: right; }
+.pitems td:nth-child(5) { width: 18%; text-align: right; font-weight: 600; }
 .pitems .right { text-align: right; }
-.total { width: 240px; margin: 18px 0 26px auto; }
+.total {
+  width: 260px;
+  margin: 20px 0 28px auto;
+  padding-top: 4px;
+}
 .total div {
   display: flex;
   justify-content: space-between;
-  color: var(--muted);
-  padding: 5px 0;
+  gap: 24px;
+  color: #64748b;
+  padding: 6px 0;
+  font-size: 13px;
 }
 .total .grand {
-  border-top: 2px solid var(--text);
-  color: var(--text);
-  margin-top: 6px;
-  padding-top: 10px;
+  border-top: 2px solid #0f172a;
+  color: #0f172a;
+  margin-top: 8px;
+  padding-top: 12px;
   font-weight: 800;
-  font-size: 16px;
+  font-size: 17px;
+  letter-spacing: -0.2px;
 }
 .terms {
-  border-top: 1px solid var(--line);
-  padding-top: 16px;
-  color: var(--muted);
+  border-top: 1px solid #e2e8f0;
+  padding-top: 18px;
+  color: #64748b;
   font-size: 12px;
+  line-height: 1.55;
   white-space: pre-line;
+}
+.terms .cap {
+  margin-bottom: 8px;
+  color: #94a3b8;
+}
+#pPayInfo {
+  margin-top: 12px !important;
+  font-size: 12px !important;
 }
 
 /* =========================================================
@@ -886,53 +1098,101 @@ input:focus:not(:focus-visible) {
 /* =========================================================
    RESPONSIVE
    ========================================================= */
-@media (max-width: 1024px) {
-  .cards { grid-template-columns: 1fr 1fr; }
+
+/* =========================================================
+   RESPONSIVE BREAKPOINTS
+   sm  ≤640px   phone
+   md  ≤900px   tablet
+   lg  ≤1100px  small laptop
+   ========================================================= */
+
+/* —— Large tablet / small laptop —— */
+@media (max-width: 1100px) {
+  .cards { grid-template-columns: repeat(2, 1fr); }
+  .form-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .preview {
+    max-width: none;
+    margin: 0;
+    min-height: auto;
+    padding: 32px 28px;
+  }
   .insights { grid-template-columns: 1fr; }
-  .form-layout { grid-template-columns: 1fr; }
-  .preview { min-height: auto; padding: 28px; }
   .table th:nth-child(3),
   .table td:nth-child(3) { display: none; }
 }
 
-@media (max-width: 768px) {
+/* —— Tablet —— */
+@media (max-width: 900px) {
+  .side {
+    width: 200px;
+  }
+  .main {
+    padding: 24px 20px;
+  }
+  .three {
+    grid-template-columns: 1fr 1fr;
+  }
+  .pay-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .pay-summary {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .line,
+  .line-header {
+    grid-template-columns: minmax(80px, 1.4fr) 56px 64px 72px 72px 28px;
+  }
+}
+
+/* —— Phone / large phone —— */
+@media (max-width: 640px) {
   .side { display: none; }
   .bottom-nav { display: flex; }
-  .bottom-nav.nav-hidden { display: none !important; }
-  .editor-back { display: inline-flex !important; }
 
   .main {
-    padding: 20px 16px;
-    padding-bottom: calc(88px + var(--safe-bottom));
+    padding: 16px 14px;
+    padding-bottom: calc(88px + var(--safe-bottom, 0px));
   }
 
   .top {
     flex-direction: column;
     align-items: flex-start;
-    gap: 14px;
-    margin-bottom: 22px;
+    gap: 12px;
+    margin-bottom: 18px;
   }
-  .top .buttons { width: 100%; }
-  .top .buttons .button:not(.primary) { display: none; }
-  .top .buttons .button.primary {
-    flex: 1;
+  .top .buttons {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .top .buttons .button {
+    flex: 1 1 auto;
     text-align: center;
-    padding: 13px 18px;
   }
 
-  .cards { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .card { padding: 16px; }
-  .card b { font-size: 20px; }
-
-  .section-head { margin: 24px 0 12px; }
-  .two, .three { grid-template-columns: 1fr; }
-
-  .line, .line-header {
-    grid-template-columns: 1fr 52px 64px 28px;
+  .cards {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
-  /* Hide unit only — keep rate so users can enter it on mobile */
-  .line input[data-f="unit"],
-  .line-header span:nth-child(3) {
+  .card { padding: 14px; }
+  .card b { font-size: 18px; }
+
+  .section-head { margin: 20px 0 10px; }
+
+  .two,
+  .three {
+    grid-template-columns: 1fr;
+  }
+
+  /* Line items: keep description, qty, rate, amount — hide unit header/field */
+  .line,
+  .line-header {
+    grid-template-columns: minmax(0, 1.5fr) 52px 68px 72px 28px;
+  }
+  .line-header span:nth-child(3),
+  .line input[data-f="unit"] {
     display: none;
   }
   .line-header span:nth-child(4),
@@ -940,34 +1200,66 @@ input:focus:not(:focus-visible) {
     display: block;
   }
 
-  .form { padding: 18px; }
+  .form { padding: 16px; }
   .preview {
     display: none;
     min-height: auto;
-    padding: 24px;
+    padding: 20px;
   }
   .preview.show-mobile { display: block; }
-  .preview-toggle { display: block; }
+  .preview-toggle { display: block; width: 100%; }
 
+  /* Invoice table: hide unit + rate columns on small screens */
   .pitems th:nth-child(3),
   .pitems td:nth-child(3),
   .pitems th:nth-child(4),
   .pitems td:nth-child(4) { display: none; }
 
+  .pay-summary {
+    grid-template-columns: 1fr;
+  }
+  .pay-row {
+    grid-template-columns: 1fr;
+  }
+  .pay-row-actions .button {
+    width: 100%;
+  }
+
   .toast {
-    left: 16px;
-    right: 16px;
-    bottom: calc(80px + var(--safe-bottom));
+    left: 12px;
+    right: 12px;
+    bottom: calc(80px + var(--safe-bottom, 0px));
     text-align: center;
   }
 
-  .table th, .table td { padding: 12px; }
-  .table .actions button { margin-left: 4px; padding: 6px 10px; }
+  .table th, .table td { padding: 10px 8px; }
+  .table .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: flex-end;
+  }
+  .table .actions button {
+    margin-left: 0;
+    padding: 6px 10px;
+  }
+
+  .payments-box { padding: 14px; }
+  .empty { padding: 36px 18px; }
 }
 
+/* —— Narrow phone —— */
 @media (max-width: 400px) {
   .cards { grid-template-columns: 1fr; }
-  .card b { font-size: 22px; }
+  .card b { font-size: 20px; }
+  .line,
+  .line-header {
+    grid-template-columns: minmax(0, 1fr) 48px 64px 28px;
+  }
+  /* On very small screens also drop amount column header space — keep rate */
+  .line-header span:nth-child(5) {
+    display: none;
+  }
 }
 
 /* =========================================================
@@ -1046,7 +1338,7 @@ input:focus:not(:focus-visible) {
     </button>
     <div class="side-note">
       <b>Invoicedey V1</b>
-      Private, local invoicing. Your data stays in this browser.
+      Private &amp; local. Export a backup from Business profile.
       <div id="accountLine" style="margin-top:10px;font-size:12px;line-height:1.5">
         <a href="index.html" style="color:var(--blue);font-weight:600;text-decoration:none">Account</a>
         <button type="button" id="appLogoutBtn" style="display:none;margin-top:8px;padding:0;border:0;background:none;color:var(--muted);font:inherit;font-size:12px;font-weight:600;cursor:pointer">Log out</button>
@@ -1062,6 +1354,7 @@ input:focus:not(:focus-visible) {
       </div>
       <div class="buttons">
         <button class="button" onclick="printInvoice();return false;">Print / save PDF</button>
+        <button class="button" id="headerReceiptBtn" type="button" onclick="printReceipt();return false;" style="display:none">Receipt PDF</button>
         <button class="button primary" id="new">+ Create invoice</button>
       </div>
     </header>
@@ -1206,13 +1499,8 @@ input:focus:not(:focus-visible) {
           </div>
           <div class="field">
             <label>Default tax rate</label>
-            <select data-p="defaultTax" id="defaultTaxSelect">
-              <option value="0">No tax (0%)</option>
-              <option value="5">5%</option>
-              <option value="7.5">7.5%</option>
-              <option value="10">10% (GST)</option>
-              <option value="20">20% (VAT)</option>
-            </select>
+            <input data-p="defaultTax" id="defaultTax" type="number" min="0" max="100" step="0.01" value="0" placeholder="e.g. 20">
+            <div id="taxSuggestHint" style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.4"></div>
           </div>
         </div>
 
@@ -1290,14 +1578,9 @@ input:focus:not(:focus-visible) {
 </select>
             </div>
             <div class="field">
-              <label>Tax rate</label>
-              <select id="tax">
-                <option value="0">No tax (0%)</option>
-                <option value="5">5%</option>
-                <option value="7.5">7.5%</option>
-                <option value="10">10%</option>
-                <option value="20">20%</option>
-              </select>
+              <label>Tax rate (%)</label>
+              <input id="tax" type="number" min="0" max="100" step="0.01" value="0" placeholder="0">
+              <div style="font-size:11px;color:var(--muted);margin-top:4px">Uses your profile tax type on the invoice. Override rate per invoice anytime.</div>
             </div>
           </div>
           <div class="two">
@@ -1321,15 +1604,52 @@ input:focus:not(:focus-visible) {
           <button class="add" id="addLine">+ Add line item</button>
 
           <div class="field"><label>Payment instructions</label><textarea id="terms" rows="2"></textarea></div>
-          <label class="paid-check">
-            <input id="paid" type="checkbox"> This invoice has been paid
-          </label>
+          <div class="payments-box" id="paymentsBox">
+            <h4>Payments</h4>
+            <div class="pay-summary">
+              <span>Total <b id="payTotal">—</b></span>
+              <span>Paid <b id="payPaid">—</b></span>
+              <span>Balance <b id="payBalance">—</b></span>
+            </div>
+            <div class="pay-row">
+              <div class="field">
+                <label>Amount</label>
+                <input id="payAmount" type="number" min="0" step="0.01" placeholder="0.00">
+              </div>
+              <div class="field">
+                <label>Date</label>
+                <input id="payDate" type="date">
+              </div>
+              <div class="field">
+                <label>Method</label>
+                <select id="payMethod">
+                  <option value="Bank transfer">Bank transfer</option>
+                  <option value="Card">Card</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Mobile money">Mobile money</option>
+                  <option value="PayPal">PayPal</option>
+                  <option value="Cheque">Cheque</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Note (optional)</label>
+                <input id="payNote" type="text" placeholder="Ref, deposit…">
+              </div>
+            </div>
+            <div class="pay-row-actions">
+              <button class="button primary" type="button" id="addPayment">Add payment</button>
+              <button class="button" type="button" id="payInFull">Record full payment</button>
+              <button class="button" type="button" id="downloadReceipt" style="display:none">Download receipt PDF</button>
+            </div>
+            <ul class="pay-list" id="payList"></ul>
+          </div>
           <div class="buttons" style="margin-top:18px;flex-wrap:wrap">
             <button class="button" id="save">Save draft</button>
             <button class="button primary" id="send">Mark as sent</button>
           </div>
           <p style="margin-top:14px;font-size:12px;color:var(--muted)">
-            V1 is local-only. Data stays in this browser. Online send &amp; payments coming later.
+            Record partial or full payments. Each payment can generate a receipt.
           </p>
         </div>
 
@@ -1345,7 +1665,7 @@ input:focus:not(:focus-visible) {
               </div>
             </div>
             <div>
-              <div class="ptitle">Invoice</div>
+              <div class="ptitle" id="pDocTitle">Invoice</div>
               <div class="pnum" id="pNumber"></div>
               <div class="pnum" id="pIssue" style="margin-top:4px"></div>
             </div>
@@ -1470,14 +1790,36 @@ const fx = {
 };
 
 function suggestTaxForCurrency(code) {
+  // Default tax type + rate by reporting/invoice currency (user can override anytime)
   const map = {
-    USD: { label: 'Sales Tax', rate: 0 },
-    EUR: { label: 'VAT', rate: 20 },
-    GBP: { label: 'VAT', rate: 20 },
-    AUD: { label: 'GST', rate: 10 },
-    NGN: { label: 'Tax', rate: 0 }
+    USD: { label: 'Sales Tax', rate: 0, region: 'United States — rate varies by state; enter local rate' },
+    EUR: { label: 'VAT', rate: 20, region: 'Eurozone — standard VAT often 19–25%' },
+    GBP: { label: 'VAT', rate: 20, region: 'United Kingdom' },
+    AUD: { label: 'GST', rate: 10, region: 'Australia' },
+    NZD: { label: 'GST', rate: 15, region: 'New Zealand' },
+    CAD: { label: 'HST', rate: 13, region: 'Canada — use GST/HST/PST as needed' },
+    CHF: { label: 'VAT', rate: 8.1, region: 'Switzerland' },
+    JPY: { label: 'Tax', rate: 10, region: 'Japan (consumption tax)' },
+    CNY: { label: 'Tax', rate: 13, region: 'China (VAT)' },
+    HKD: { label: 'Tax', rate: 0, region: 'Hong Kong — generally no VAT/GST' },
+    SGD: { label: 'GST', rate: 9, region: 'Singapore' },
+    INR: { label: 'Tax', rate: 18, region: 'India (GST — slabs vary)' },
+    NGN: { label: 'Tax', rate: 7.5, region: 'Nigeria (VAT)' },
+    ZAR: { label: 'VAT', rate: 15, region: 'South Africa' },
+    KES: { label: 'VAT', rate: 16, region: 'Kenya' },
+    GHS: { label: 'VAT', rate: 15, region: 'Ghana' },
+    AED: { label: 'VAT', rate: 5, region: 'UAE' },
+    SAR: { label: 'VAT', rate: 15, region: 'Saudi Arabia' },
+    SEK: { label: 'VAT', rate: 25, region: 'Sweden' },
+    NOK: { label: 'VAT', rate: 25, region: 'Norway' },
+    DKK: { label: 'VAT', rate: 25, region: 'Denmark' },
+    PLN: { label: 'VAT', rate: 23, region: 'Poland' },
+    BRL: { label: 'Tax', rate: 0, region: 'Brazil — complex; enter applicable rate' },
+    MXN: { label: 'VAT', rate: 16, region: 'Mexico (IVA)' },
+    PHP: { label: 'Tax', rate: 12, region: 'Philippines (VAT)' },
+    THB: { label: 'VAT', rate: 7, region: 'Thailand' }
   };
-  return map[code] || { label: 'Tax', rate: 0 };
+  return map[code] || { label: 'Tax', rate: 0, region: 'Set your tax type and rate manually' };
 }
 
 /* ---------- Theme ---------- */
@@ -1520,6 +1862,44 @@ function tax(i) {
 function total(i) {
   return sub(i) + tax(i);
 }
+
+function ensurePayments(i) {
+  if (!i) return [];
+  if (!Array.isArray(i.payments)) i.payments = [];
+  // Migrate legacy boolean paid → one full payment
+  if (i.paid && !i.payments.length) {
+    const t = total(i);
+    if (t > 0) {
+      i.payments.push({
+        id: crypto.randomUUID(),
+        amount: t,
+        date: i.paidAt || i.issue || today,
+        note: 'Paid in full'
+      });
+    }
+  }
+  return i.payments;
+}
+
+function amountPaid(i) {
+  return ensurePayments(i).reduce((n, p) => n + (Number(p.amount) || 0), 0);
+}
+
+function balanceDue(i) {
+  return Math.max(0, total(i) - amountPaid(i));
+}
+
+function syncPaidFlag(i) {
+  const t = total(i);
+  const paidAmt = amountPaid(i);
+  i.paid = t > 0 ? paidAmt >= t - 0.001 : paidAmt > 0;
+  if (i.paid) {
+    const last = ensurePayments(i).slice().sort((a, b) => (a.date || '').localeCompare(b.date || '')).pop();
+    i.paidAt = last?.date || i.paidAt || today;
+  }
+  return i;
+}
+
 function report(i) {
   const from = fx[i.currency] ?? 1;
   const to = fx[db.profile.reporting] ?? 1;
@@ -1544,7 +1924,12 @@ function toast(msg) {
   setTimeout(() => $('#toast').classList.remove('show'), 2200);
 }
 function status(i) {
-  if (i.paid) return 'Paid';
+  ensurePayments(i);
+  syncPaidFlag(i);
+  const paidAmt = amountPaid(i);
+  const tot = total(i);
+  if (tot > 0 && paidAmt >= tot - 0.001) return 'Paid';
+  if (paidAmt > 0) return 'Partial';
   if (i.status === 'Draft') return 'Draft';
   if (new Date(i.due + 'T12:00:00') < new Date()) return 'Overdue';
   return 'Sent';
@@ -1588,8 +1973,14 @@ function confirmAction(title, message, onConfirm) {
 function renderInvoiceRows(arr, options = {}) {
   const { showActions = false } = options;
   if (!arr.length) {
-    return `<div class="empty">No invoices yet.<br>
-      <button class="button primary" style="margin-top:14px" onclick="newInvoice()">Create your first invoice</button>
+    return `<div class="empty">
+      <div class="empty-icon">▤</div>
+      <h3>No invoices yet</h3>
+      <p>Create a clear invoice in under a minute. Add a client first if you want to reuse their details.</p>
+      <div class="empty-actions">
+        <button class="button primary" type="button" onclick="newInvoice()">Create your first invoice</button>
+        <button class="button" type="button" onclick="switchTo('clients')">Add a client</button>
+      </div>
     </div>`;
   }
   return `<table class="table">
@@ -1611,9 +2002,10 @@ function renderInvoiceRows(arr, options = {}) {
           <td>${client(i.client)?.name || '—'}</td>
           <td>${new Date(i.due + 'T12:00:00').toLocaleDateString()}</td>
           <td><span class="badge ${st.toLowerCase()}">${st}</span></td>
-          <td class="right"><b>${money(total(i), i.currency)}</b></td>
+          <td class="right"><b>${money(total(i), i.currency)}</b>${amountPaid(i) > 0 && balanceDue(i) > 0.001 ? `<br><small style="color:var(--muted)">Bal ${money(balanceDue(i), i.currency)}</small>` : amountPaid(i) > 0 && balanceDue(i) <= 0.001 ? `<br><small style="color:var(--green-text)">Paid</small>` : ''}</td>
           ${showActions ? `<td class="actions" onclick="event.stopPropagation()">
-            ${!i.paid ? `<button class="button small" data-mark-paid="${i.id}">Mark paid</button>` : ''}
+            ${balanceDue(i) > 0.001 ? `<button class="button small" data-mark-paid="${i.id}">Pay in full</button>` : ''}
+            ${amountPaid(i) > 0 ? `<button class="button small" data-receipt="${i.id}">PDF</button>` : ''}
             <button class="button small danger" data-delete-invoice="${i.id}">Delete</button>
           </td>` : ''}
         </tr>`;
@@ -1624,11 +2016,11 @@ function renderInvoiceRows(arr, options = {}) {
 
 function dashboard() {
   const all = db.invoices;
-  const open = all.filter(i => !i.paid && i.status !== 'Draft');
+  const open = all.filter(i => { syncPaidFlag(i); return balanceDue(i) > 0.001 && i.status !== 'Draft'; });
   const over = open.filter(i => new Date(i.due + 'T12:00:00') < new Date());
-  const paid = all.filter(i => i.paid);
-  const out = open.reduce((n, i) => n + report(i), 0);
-  const late = over.reduce((n, i) => n + report(i), 0);
+  const paid = all.filter(i => { syncPaidFlag(i); return i.paid; });
+  const out = open.reduce((n, i) => n + balanceDue(i) * ((fx[i.currency] ?? 1) / (fx[db.profile.reporting] ?? 1)), 0);
+  const late = over.reduce((n, i) => n + balanceDue(i) * ((fx[i.currency] ?? 1) / (fx[db.profile.reporting] ?? 1)), 0);
   const now = new Date();
   const got = paid
     .filter(i => {
@@ -1650,7 +2042,7 @@ function dashboard() {
   open.forEach(i => {
     const days = Math.max(0, Math.floor((new Date() - new Date(i.due + 'T12:00:00')) / 86400000));
     const b = days === 0 ? 0 : days <= 30 ? 1 : days <= 60 ? 2 : 3;
-    buckets[b][1] += report(i);
+    buckets[b][1] += balanceDue(i) * ((fx[i.currency] ?? 1) / (fx[db.profile.reporting] ?? 1));
   });
   const max = Math.max(1, ...buckets.map(x => x[1]));
   $('#aging').innerHTML = buckets.map((b, k) =>
@@ -1660,6 +2052,29 @@ function dashboard() {
       <b class="right">${money(b[1])}</b>
     </div>`
   ).join('');
+
+  if (!all.length) {
+    $('#insightText').innerHTML = `<b style="color:var(--text)">Welcome to Invoicedey</b><br>
+      Set up once, then invoice with confidence. Everything stays on this device until you export a backup.`;
+    $('#aging').innerHTML = '';
+    $('#recent').innerHTML = `<div class="empty">
+      <div class="empty-icon">✓</div>
+      <h3>Get ready to invoice</h3>
+      <p>Three quick steps. You can change any of this later in Business profile.</p>
+      <ol class="steps">
+        <li>Add your business name and tax details</li>
+        <li>Save a client (optional but faster next time)</li>
+        <li>Create and download your first invoice</li>
+      </ol>
+      <div class="empty-actions">
+        <button class="button primary" type="button" onclick="newInvoice()">Create invoice</button>
+        <button class="button" type="button" onclick="switchTo('profile')">Business profile</button>
+        <button class="button" type="button" onclick="switchTo('clients')">Add client</button>
+      </div>
+      <div class="trust-strip"><b>Local-only for now.</b> Data is stored in this browser. Use <b>Business profile → Download backup</b> so you never lose invoices.</div>
+    </div>`;
+    return;
+  }
 
   $('#insightText').innerHTML = over.length
     ? `<b style="color:var(--red-text)">${over.length} invoice${over.length > 1 ? 's are' : ' is'} overdue.</b><br>
@@ -1683,12 +2098,32 @@ function invoices() {
              st.includes(q);
     });
   }
+  if (q && !list.length && db.invoices.length) {
+    $('#invoiceList').innerHTML = `<div class="empty">
+      <div class="empty-icon">⌕</div>
+      <h3>No matches</h3>
+      <p>Nothing matched “${q.replace(/[<>&]/g, '')}”. Try another number, client, or status.</p>
+      <div class="empty-actions">
+        <button class="button" type="button" onclick="document.getElementById('invoiceSearch').value='';invoices()">Clear search</button>
+      </div>
+    </div>`;
+    return;
+  }
   $('#invoiceList').innerHTML = renderInvoiceRows(list, { showActions: true });
 }
 
 function clients() {
   if (!db.clients.length) {
-    $('#clientList').innerHTML = `<div class="empty">No saved clients yet.</div>`;
+    $('#clientList').innerHTML = `<div class="empty">
+      <div class="empty-icon">♙</div>
+      <h3>No clients yet</h3>
+      <p>Save a client once — name, email, and billing address — then invoice them in a few taps.</p>
+      <div class="empty-actions">
+        <button class="button primary" type="button" id="emptyAddClient">+ Add client</button>
+      </div>
+    </div>`;
+    const btn = document.getElementById('emptyAddClient');
+    if (btn) btn.onclick = () => openClientModal(null);
     return;
   }
   $('#clientList').innerHTML = `<table class="table">
@@ -1730,6 +2165,16 @@ function profile() {
     'data:image/svg+xml,' + encodeURIComponent(
       '<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56"><rect width="100%" height="100%" fill="#E8F0FE"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="#2467E3" font-size="16" font-family="system-ui" font-weight="700">ID</text></svg>'
     );
+  if (typeof applyTaxSuggestion === 'function') {
+    applyTaxSuggestion(db.profile.reporting || 'USD', false);
+    const hint = $('#taxSuggestHint');
+    if (hint) {
+      const s = suggestTaxForCurrency(db.profile.reporting || 'USD');
+      hint.textContent = s.region
+        ? ('Suggested for ' + (db.profile.reporting || 'USD') + ': ' + s.label + ' @ ' + s.rate + '%. ' + s.region + ' Override anytime.')
+        : '';
+    }
+  }
 }
 
 function nextInvoiceNumber() {
@@ -1760,6 +2205,8 @@ function newInvoice() {
     note: 'Thank you for your business.',
     terms: (db.profile.paymentDetails || '').trim() || 'Payment due by the date above.',
     paid: false,
+    payments: [],
+    paidAt: '',
     status: 'Draft',
     lines: [{ desc: 'Professional services', qty: 1, unit: 'hours', rate: 0 }]
   };
@@ -1778,7 +2225,10 @@ function editor() {
   $('#title').value = edit.title;
   $('#note').value = edit.note;
   $('#terms').value = edit.terms;
-  $('#paid').checked = edit.paid;
+  ensurePayments(edit);
+  syncPaidFlag(edit);
+  renderPayments();
+  updateReceiptButtons();
   $('#client').innerHTML = '<option value="">Select client…</option>' +
     db.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
   $('#client').value = edit.client || '';
@@ -1812,6 +2262,7 @@ function updateLineAmount(n) {
   const invalid = (+x.qty < 0) || (x.rate !== '' && +x.rate < 0);
   el.textContent = money(lineAmount(x), edit.currency);
   el.classList.toggle('invalid', invalid);
+  if (typeof renderPayments === 'function') renderPayments();
 }
 
 function preview() {
@@ -1819,10 +2270,18 @@ function preview() {
   const p = db.profile;
   $('#pBusiness').textContent = p.name || 'Your Company';
   const contactBits = [p.email, p.phone, p.address].filter(Boolean);
-  if (p.taxId) contactBits.push((p.taxLabel || 'Tax') + ' no.: ' + p.taxId);
+  // Universal letterhead label — not "VAT no."
+  if (p.taxId) contactBits.push('Tax ID: ' + p.taxId);
   $('#pContact').textContent = contactBits.join('\n');
   $('#pLogo').style.display = p.logo ? 'block' : 'none';
   $('#pLogo').src = p.logo || '';
+  // Document title: "Tax Invoice" when GST/VAT (or similar) is charged
+  const taxType = (p.taxLabel || 'Tax').toUpperCase();
+  const taxRate = +edit.tax || 0;
+  const useTaxInvoice = taxRate > 0 && /^(VAT|GST|HST|SST|IVA)$/i.test(p.taxLabel || '');
+  const docTitle = useTaxInvoice ? 'Tax Invoice' : 'Invoice';
+  const pDoc = document.getElementById('pDocTitle');
+  if (pDoc) pDoc.textContent = docTitle;
   $('#pNumber').textContent = edit.number + ' · ' + edit.currency;
   const issueLabel = edit.issue ? new Date(edit.issue + 'T12:00:00').toLocaleDateString() : '';
   const pIssue = document.getElementById('pIssue');
@@ -1855,9 +2314,31 @@ function preview() {
   ).join('');
   $('#pSub').textContent = money(sub(edit), edit.currency);
   const label = (db.profile.taxLabel || 'Tax');
-  $('#taxLabel').textContent = label + ' (' + (+edit.tax || 0) + '%)';
+  const rate = +edit.tax || 0;
+  // Tax type only appears on the totals row
+  $('#taxLabel').textContent = rate ? (label + ' (' + rate + '%)') : label;
   $('#pTax').textContent = money(tax(edit), edit.currency);
+  // Hide zero tax row visually? Keep visible for transparency (0.00).
   $('#pTotal').textContent = money(total(edit), edit.currency);
+  // Payment status under totals on the live preview
+  let payInfo = document.getElementById('pPayInfo');
+  if (!payInfo) {
+    payInfo = document.createElement('div');
+    payInfo.id = 'pPayInfo';
+    payInfo.style.cssText = 'margin-top:10px;font-size:12px;color:var(--muted);line-height:1.45';
+    const totalBox = document.querySelector('.preview .total');
+    if (totalBox) totalBox.appendChild(payInfo);
+  }
+  ensurePayments(edit);
+  const paidAmt = amountPaid(edit);
+  const bal = balanceDue(edit);
+  if (paidAmt <= 0) {
+    payInfo.textContent = '';
+  } else if (bal <= 0.001) {
+    payInfo.innerHTML = '<span style="color:var(--green-text);font-weight:700">Paid in full</span>';
+  } else {
+    payInfo.innerHTML = 'Paid ' + money(paidAmt, edit.currency) + ' · <b style="color:var(--text)">Balance ' + money(bal, edit.currency) + '</b>';
+  }
 }
 
 function clearInvalid(root) {
@@ -1983,7 +2464,9 @@ function persist(s) {
     db.invoices[n] = toSave;
   }
   save();
-  toast(edit.paid ? 'Invoice marked as paid.' : s === 'Sent' ? 'Invoice marked as sent.' : 'Draft saved.');
+  ensurePayments(edit);
+  syncPaidFlag(edit);
+  toast(edit.paid ? 'Invoice paid in full.' : amountPaid(edit) > 0 ? 'Invoice saved (partially paid).' : s === 'Sent' ? 'Invoice marked as sent.' : 'Draft saved.');
   switchTo('invoices');
 }
 
@@ -2010,10 +2493,20 @@ document.addEventListener('click', e => {
   if (markPaid) {
     const inv = db.invoices.find(i => i.id === markPaid.dataset.markPaid);
     if (inv) {
-      inv.paid = true;
-      inv.status = 'Sent';
+      ensurePayments(inv);
+      const bal = balanceDue(inv);
+      if (bal > 0.001) {
+        inv.payments.push({
+          id: crypto.randomUUID(),
+          amount: Math.round(bal * 100) / 100,
+          date: today,
+          note: 'Paid in full'
+        });
+      }
+      if (inv.status === 'Draft') inv.status = 'Sent';
+      syncPaidFlag(inv);
       save();
-      toast('Invoice marked as paid.');
+      toast(inv.paid ? 'Invoice paid in full.' : 'Payment recorded.');
       invoices();
       if ($('#dashboard').classList.contains('active')) dashboard();
     }
@@ -2081,7 +2574,7 @@ document.addEventListener('input', e => {
     preview();
     return; // never re-render lines() on each keystroke
   }
-  const map = { number: 'number', currency: 'currency', tax: 'tax', issue: 'issue', due: 'due', client: 'client', title: 'title', note: 'note', terms: 'terms', paid: 'paid' };
+  const map = { number: 'number', currency: 'currency', tax: 'tax', issue: 'issue', due: 'due', client: 'client', title: 'title', note: 'note', terms: 'terms' };
   if (map[e.target.id] && edit) {
     edit[map[e.target.id]] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     preview();
@@ -2233,22 +2726,48 @@ $('#saveProfile').onclick = () => {
   toast('Business profile saved.');
 };
 
-// Suggest tax label/rate when reporting currency changes (only if user hasn't customized heavily)
+// Auto-index tax type + rate from reporting currency; user can still change both manually
 document.addEventListener('change', e => {
   if (e.target && e.target.id === 'reportingSelect') {
+    applyTaxSuggestion(e.target.value, true);
+  }
+  if (e.target && e.target.id === 'currency' && edit) {
+    // Optional soft suggest when invoice currency changes (does not lock fields)
     const suggestion = suggestTaxForCurrency(e.target.value);
-    const labelEl = $('#taxLabelSelect');
-    const rateEl = $('#defaultTaxSelect');
-    if (labelEl && rateEl) {
-      // Soft suggest — always update label; only set rate if currently 0 or matching common defaults
-      labelEl.value = suggestion.label;
-      const currentRate = Number(rateEl.value);
-      if (currentRate === 0 || [10, 20].includes(currentRate)) {
-        rateEl.value = String(suggestion.rate);
-      }
+    const taxInput = $('#tax');
+    if (taxInput && (taxInput.value === '' || Number(taxInput.value) === 0 || Number(taxInput.value) === Number(db.profile.defaultTax))) {
+      taxInput.value = suggestion.rate;
+      edit.tax = suggestion.rate;
+      preview();
     }
   }
 });
+
+function applyTaxSuggestion(code, writeProfileFields) {
+  const suggestion = suggestTaxForCurrency(code);
+  const labelEl = $('#taxLabelSelect');
+  const rateEl = $('#defaultTax') || $('#defaultTaxSelect');
+  const hint = $('#taxSuggestHint');
+  if (writeProfileFields && labelEl) {
+    // Ensure option exists
+    if (labelEl && ![...labelEl.options].some(o => o.value === suggestion.label)) {
+      const opt = document.createElement('option');
+      opt.value = suggestion.label;
+      opt.textContent = suggestion.label;
+      labelEl.appendChild(opt);
+    }
+    labelEl.value = suggestion.label;
+  }
+  if (writeProfileFields && rateEl) {
+    rateEl.value = suggestion.rate;
+  }
+  if (hint) {
+    hint.textContent = suggestion.region
+      ? ('Suggested for ' + code + ': ' + suggestion.label + ' ' + suggestion.rate + '%. ' + suggestion.region + ' You can change these manually.')
+      : '';
+  }
+  return suggestion;
+}
 
 $('#logoFile').onchange = e => {
   const f = e.target.files[0];
@@ -2370,24 +2889,792 @@ async function syncProfile(client, user) {
   }
 })();
 
+function getPrintCSS() {
+  return `
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 28px 32px;
+      font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: #0f172a;
+      background: #fff;
+    }
+    .phead {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      border-bottom: 2px solid #2467E3;
+      padding-bottom: 20px;
+      margin-bottom: 4px;
+    }
+    .pbrand { font-size: 22px; font-weight: 800; color: #0f172a; letter-spacing: -0.4px; }
+    .ptitle {
+      color: #2467E3;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.6px;
+      text-align: right;
+    }
+    .pnum {
+      font: 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: #64748b;
+      margin-top: 6px;
+      text-align: right;
+      line-height: 1.4;
+    }
+    .parties {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 28px;
+      padding: 26px 0 22px;
+    }
+    .parties b { font-size: 15px; font-weight: 700; color: #0f172a; display: block; }
+    .cap {
+      font-size: 10px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .project {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin: 0 0 10px;
+      color: #0f172a;
+    }
+    .note { color: #64748b; margin: 0 0 24px; font-size: 13.5px; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 13px; }
+    th {
+      text-align: left;
+      font-size: 10px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      border-bottom: 2px solid #e2e8f0;
+      padding: 10px 8px;
+      font-weight: 700;
+    }
+    td {
+      padding: 14px 8px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: top;
+      color: #0f172a;
+    }
+    th:nth-child(1), td:nth-child(1) { width: 40%; }
+    th:nth-child(2), td:nth-child(2),
+    th:nth-child(3), td:nth-child(3),
+    th:nth-child(4), td:nth-child(4),
+    th:nth-child(5), td:nth-child(5) { text-align: right; }
+    th:nth-child(2), td:nth-child(2) { width: 10%; }
+    th:nth-child(3), td:nth-child(3) { width: 12%; }
+    th:nth-child(4), td:nth-child(4) { width: 18%; }
+    th:nth-child(5), td:nth-child(5) { width: 20%; font-weight: 600; }
+    .right { text-align: right; }
+    .total { width: 260px; margin: 20px 0 28px auto; }
+    .total div {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      color: #64748b;
+      padding: 6px 0;
+      font-size: 13px;
+    }
+    .total .grand {
+      border-top: 2px solid #0f172a;
+      color: #0f172a;
+      margin-top: 8px;
+      padding-top: 12px;
+      font-weight: 800;
+      font-size: 17px;
+    }
+    .terms {
+      border-top: 1px solid #e2e8f0;
+      padding-top: 18px;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.55;
+      white-space: pre-line;
+    }
+    .paid-banner {
+      margin: 14px 0 4px;
+      padding: 12px 14px;
+      background: #ECFDF5;
+      color: #047857;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+    img { max-width: 52px; max-height: 52px; object-fit: contain; }
+    @page { size: A4; margin: 12mm; }
+  `;
+}
+
+function openPrintDocument(title, bodyHtml) {
+  const htmlDoc = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' +
+    title + '</title><style>' + getPrintCSS() + '</style></head><body>' + bodyHtml + '</body></html>';
+  const w = window.open('', '_blank');
+  if (!w) {
+    toast('Allow pop-ups to print, or use Share → Print');
+    return null;
+  }
+  w.document.open();
+  w.document.write(htmlDoc);
+  w.document.close();
+  const trigger = () => {
+    try { w.focus(); w.print(); } catch (err) {
+      toast('Use the browser share/print menu on the new tab.');
+    }
+  };
+  if (w.document.readyState === 'complete') setTimeout(trigger, 250);
+  else w.onload = () => setTimeout(trigger, 250);
+  return w;
+}
+
 function printInvoice() {
-  // Must show invoice preview; switch to editor if we have an open invoice
   if (!edit) {
     toast('Open an invoice first to print.');
     return;
   }
-  const prevTitle = document.title;
-  document.title = edit.number || 'Invoice';
-  // Ensure editor + preview visible for print CSS
-  switchTo('editor');
+  try { preview(); } catch (e) {}
   const panel = document.getElementById('previewPanel');
-  if (panel) panel.classList.add('show-mobile');
-  // Allow layout to settle
-  setTimeout(() => {
-    window.print();
-    setTimeout(() => { document.title = prevTitle; }, 300);
-  }, 50);
+  if (!panel) {
+    toast('Invoice preview not found.');
+    return;
+  }
+  openPrintDocument(edit.number || 'Invoice', panel.innerHTML);
 }
+
+function buildReceiptHtml(inv, payment) {
+  const p = db.profile;
+  const c = client(inv.client);
+  ensurePayments(inv);
+  const payments = inv.payments.slice().sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  const pay = payment || payments[payments.length - 1];
+  if (!pay) return '<p>No payment to show.</p>';
+
+  const paidDate = pay.date
+    ? new Date(pay.date + (String(pay.date).length > 10 ? '' : 'T12:00:00')).toLocaleDateString()
+    : new Date().toLocaleDateString();
+  const issueLabel = inv.issue ? new Date(inv.issue + 'T12:00:00').toLocaleDateString() : '';
+  const contactBits = [p.email, p.phone, p.address].filter(Boolean);
+  if (p.taxId) contactBits.push('Tax ID: ' + p.taxId);
+  const lines = (inv.lines || []).map(x =>
+    `<tr>
+      <td>${x.desc || 'Service'}</td>
+      <td class="right">${x.qty}</td>
+      <td class="right">${x.unit || '—'}</td>
+      <td class="right">${formatRate(x.rate)}</td>
+      <td class="right">${money(lineAmount(x), inv.currency)}</td>
+    </tr>`
+  ).join('');
+  const label = p.taxLabel || 'Tax';
+  const rate = +inv.tax || 0;
+  const addr = (c?.address || '').trim();
+  const thisAmt = Number(pay.amount) || 0;
+  const totalPaid = amountPaid(inv);
+  const bal = balanceDue(inv);
+  const isFull = bal <= 0.001;
+  const banner = isFull
+    ? '<div class="paid-banner">Paid in full</div>'
+    : '<div class="paid-banner" style="background:#FFF7ED;color:#C2410C">Partial payment received</div>';
+
+  return `
+    <div class="phead">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        ${p.logo ? `<img src="${p.logo}" alt="">` : ''}
+        <div>
+          <div class="pbrand">${p.name || 'Your Company'}</div>
+          <div style="white-space:pre-line;font-size:11px;margin-top:4px;color:#666">${contactBits.join('\\n')}</div>
+        </div>
+      </div>
+      <div>
+        <div class="ptitle">Receipt</div>
+        <div class="pnum">${inv.number || ''} · ${inv.currency || ''}</div>
+        <div class="pnum" style="margin-top:4px">Payment date ${paidDate}</div>
+      </div>
+    </div>
+    ${banner}
+    <div class="parties">
+      <div>
+        <div class="cap">Received from</div>
+        <b>${c?.name || 'Client'}</b>
+        ${addr ? `<div style="font-size:11px;color:#666;margin-top:2px;white-space:pre-line">${addr}</div>` : ''}
+      </div>
+      <div>
+        <div class="cap">Invoice reference</div>
+        <span>${inv.number || '—'}</span>
+        ${issueLabel ? `<div style="font-size:11px;color:#666;margin-top:4px">Invoiced ${issueLabel}</div>` : ''}
+        ${pay.note ? `<div style="font-size:11px;color:#666;margin-top:4px">${pay.note}</div>` : ''}
+      </div>
+    </div>
+    <h2 class="project">${inv.title || 'Payment receipt'}</h2>
+    <p class="note">This receipt confirms a payment against the invoice below.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th class="right">Qty</th>
+          <th class="right">Unit</th>
+          <th class="right">Rate</th>
+          <th class="right">Amount</th>
+        </tr>
+      </thead>
+      <tbody>${lines}</tbody>
+    </table>
+    <div class="total">
+      <div><span>Invoice total</span><span>${money(total(inv), inv.currency)}</span></div>
+      <div><span>This payment</span><span>${money(thisAmt, inv.currency)}</span></div>
+      <div><span>Total paid to date</span><span>${money(totalPaid, inv.currency)}</span></div>
+      <div class="grand"><span>${isFull ? 'Amount paid' : 'Balance due'}</span><span>${money(isFull ? totalPaid : bal, inv.currency)}</span></div>
+    </div>
+    <div class="terms">Thank you for your payment.${inv.number ? ' Reference: ' + inv.number + '.' : ''}</div>
+  `;
+}
+
+
+async function loadHtml2Pdf() {
+  if (window.html2pdf) return window.html2pdf;
+  await new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+    s.onload = resolve;
+    s.onerror = () => reject(new Error('Could not load PDF library'));
+    document.head.appendChild(s);
+  });
+  if (!window.html2pdf) throw new Error('html2pdf not available');
+  return window.html2pdf;
+}
+
+function resolveReceiptInvoice(invoiceId) {
+  if (invoiceId) return db.invoices.find(i => i.id === invoiceId) || null;
+  if (edit) return edit;
+  return null;
+}
+
+
+
+function buildReceiptDocument(inv, payment) {
+  const p = db.profile || {};
+  const c = client(inv.client);
+  ensurePayments(inv);
+  const payments = (inv.payments || []).slice().sort((a, b) => String(a.date || '').localeCompare(String(b.date || '')));
+  const pay = payment || payments[payments.length - 1];
+  if (!pay) return '';
+
+  const esc = (s) => String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  const fmtDate = (d) => {
+    if (!d) return '—';
+    try { return new Date(String(d).slice(0, 10) + 'T12:00:00').toLocaleDateString(); }
+    catch (e) { return String(d); }
+  };
+
+  // Format rates with grouping, no currency symbol (hard-entered figure)
+  const fmtNum = (n) => {
+    const x = Number(n);
+    if (!Number.isFinite(x)) return '0';
+    return x.toLocaleString('en-US', { maximumFractionDigits: 2 });
+  };
+
+  const paidDate = fmtDate(pay.date);
+  const issueLabel = inv.issue ? fmtDate(inv.issue) : '';
+  const contactLines = [p.email, p.phone, p.address].filter(Boolean).map(esc);
+  if (p.taxId) contactLines.push(esc('Tax ID: ' + p.taxId));
+  const contactHtml = contactLines.join('<br>');
+  const addr = (c && c.address) ? String(c.address).trim() : '';
+  const thisAmt = Number(pay.amount) || 0;
+  const totalPaid = amountPaid(inv);
+  const bal = balanceDue(inv);
+  const isFull = bal <= 0.001;
+  const cur = inv.currency || db.profile.reporting || 'USD';
+
+  const itemRows = (inv.lines || []).map(x =>
+    '<tr>' +
+      '<td class="c-desc">' + esc(x.desc || 'Service') + '</td>' +
+      '<td class="c-num">' + esc(x.qty) + '</td>' +
+      '<td class="c-num">' + esc(x.unit || '—') + '</td>' +
+      '<td class="c-num">' + esc(fmtNum(x.rate)) + '</td>' +
+      '<td class="c-num">' + esc(money(lineAmount(x), cur)) + '</td>' +
+    '</tr>'
+  ).join('');
+
+  const payRows = payments.map(pp => {
+    const isThis = pay && pp.id === pay.id;
+    return '<tr class="' + (isThis ? 'row-this' : '') + '">' +
+      '<td>' + esc(fmtDate(pp.date)) + (isThis ? ' <span class="tag">this receipt</span>' : '') + '</td>' +
+      '<td>' + esc(pp.method || '—') + '</td>' +
+      '<td>' + esc(pp.note || '—') + '</td>' +
+      '<td class="c-num">' + esc(money(Number(pp.amount) || 0, cur)) + '</td>' +
+    '</tr>';
+  }).join('');
+
+  const logo = p.logo
+    ? '<img class="logo" src="' + p.logo + '" alt="" />'
+    : '';
+
+  return `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Receipt ${esc(inv.number || '')}</title>
+<style>
+  @page { size: A4; margin: 14mm; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #0f172a;
+    background: #fff;
+  }
+  .page { max-width: 700px; margin: 0 auto; padding: 8px 4px; }
+  .head {
+    display: table;
+    width: 100%;
+    border-bottom: 2px solid #2467E3;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+  }
+  .head-left, .head-right { display: table-cell; vertical-align: top; }
+  .head-right { text-align: right; width: 42%; }
+  .brand-wrap { display: flex; gap: 12px; align-items: flex-start; }
+  .logo { width: 48px; height: 48px; object-fit: contain; flex-shrink: 0; }
+  .brand { font-size: 20px; font-weight: 800; letter-spacing: -0.3px; margin: 0 0 6px; }
+  .contact { font-size: 11px; color: #64748b; line-height: 1.55; }
+  .doc-type {
+    color: #2467E3;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+    margin: 0 0 8px;
+  }
+  .meta { font-size: 12px; color: #64748b; line-height: 1.5; }
+  .banner {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 12px;
+    margin-bottom: 18px;
+  }
+  .banner.full { background: #ecfdf5; color: #047857; }
+  .banner.partial { background: #fff7ed; color: #c2410c; }
+  .parties {
+    display: table;
+    width: 100%;
+    margin-bottom: 18px;
+  }
+  .party { display: table-cell; vertical-align: top; width: 50%; padding-right: 16px; }
+  .party:last-child { padding-right: 0; text-align: right; }
+  .party:last-child .party-body { text-align: right; }
+  .label {
+    font-size: 10px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    margin-bottom: 4px;
+  }
+  .party-body { font-size: 13px; }
+  .party-body strong { font-size: 14px; font-weight: 700; }
+  .addr { font-size: 12px; color: #64748b; margin-top: 4px; white-space: pre-line; }
+  .title { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; margin: 0 0 4px; }
+  .subtitle { font-size: 12px; color: #64748b; margin: 0 0 20px; }
+  .section-label {
+    font-size: 10px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    margin: 0 0 8px;
+  }
+  table.grid {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-bottom: 22px;
+  }
+  table.grid th {
+    font-size: 10px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+    text-align: left;
+    padding: 8px 6px;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  table.grid td {
+    padding: 10px 6px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: top;
+    word-wrap: break-word;
+  }
+  table.grid th.c-num, table.grid td.c-num { text-align: right; }
+  table.grid th.c-desc, table.grid td.c-desc { width: auto; }
+  /* column widths */
+  table.items th:nth-child(2), table.items td:nth-child(2) { width: 11%; }
+  table.items th:nth-child(3), table.items td:nth-child(3) { width: 12%; }
+  table.items th:nth-child(4), table.items td:nth-child(4) { width: 16%; }
+  table.items th:nth-child(5), table.items td:nth-child(5) { width: 20%; }
+  table.pays th:nth-child(1), table.pays td:nth-child(1) { width: 24%; }
+  table.pays th:nth-child(2), table.pays td:nth-child(2) { width: 22%; }
+  table.pays th:nth-child(4), table.pays td:nth-child(4) { width: 22%; text-align: right; }
+  table.pays th:nth-child(4) { text-align: right; }
+  tr.row-this td { background: #f8fafc; font-weight: 600; }
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    color: #2467E3;
+    font-weight: 700;
+    margin-left: 4px;
+  }
+  .totals {
+    width: 280px;
+    margin-left: auto;
+    margin-bottom: 24px;
+  }
+  .totals table { width: 100%; border-collapse: collapse; }
+  .totals td {
+    padding: 6px 0;
+    font-size: 13px;
+    color: #64748b;
+  }
+  .totals td:last-child { text-align: right; color: #0f172a; white-space: nowrap; }
+  .totals tr.grand td {
+    padding-top: 10px;
+    border-top: 2px solid #0f172a;
+    font-weight: 800;
+    font-size: 15px;
+    color: #0f172a;
+  }
+  .foot {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 14px;
+    font-size: 12px;
+    color: #64748b;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="head">
+    <div class="head-left">
+      <div class="brand-wrap">
+        ${logo}
+        <div>
+          <div class="brand">${esc(p.name || 'Your Company')}</div>
+          <div class="contact">${contactHtml}</div>
+        </div>
+      </div>
+    </div>
+    <div class="head-right">
+      <div class="doc-type">RECEIPT</div>
+      <div class="meta">${esc(inv.number || '')} · ${esc(cur)}<br>Payment ${esc(paidDate)}</div>
+    </div>
+  </div>
+
+  <div class="banner ${isFull ? 'full' : 'partial'}">${isFull ? 'Paid in full' : 'Partial payment received'}</div>
+
+  <div class="parties">
+    <div class="party">
+      <div class="label">Received from</div>
+      <div class="party-body">
+        <strong>${esc((c && c.name) || 'Client')}</strong>
+        ${addr ? '<div class="addr">' + esc(addr) + '</div>' : ''}
+      </div>
+    </div>
+    <div class="party">
+      <div class="label">Invoice</div>
+      <div class="party-body">
+        <strong>${esc(inv.number || '—')}</strong>
+        ${issueLabel ? '<div class="addr">Issued ' + esc(issueLabel) + '</div>' : ''}
+      </div>
+    </div>
+  </div>
+
+  <div class="title">${esc(inv.title || 'Payment receipt')}</div>
+  <p class="subtitle">Payment of ${esc(money(thisAmt, cur))} received on ${esc(paidDate)}${pay.method ? ' via ' + esc(pay.method) : ''}${pay.note ? ' · ' + esc(pay.note) : ''}.</p>
+
+  <div class="section-label">Invoice items</div>
+  <table class="grid items">
+    <thead>
+      <tr>
+        <th class="c-desc">Description</th>
+        <th class="c-num">Qty</th>
+        <th class="c-num">Unit</th>
+        <th class="c-num">Rate</th>
+        <th class="c-num">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${itemRows || '<tr><td colspan="5" style="color:#64748b;padding:12px 6px;">No line items</td></tr>'}
+    </tbody>
+  </table>
+
+  <div class="section-label">Payments</div>
+  <table class="grid pays">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Method</th>
+        <th>Note</th>
+        <th class="c-num">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${payRows}
+    </tbody>
+  </table>
+
+  <div class="totals">
+    <table>
+      <tr><td>Invoice total</td><td>${esc(money(total(inv), cur))}</td></tr>
+      <tr><td>This payment</td><td>${esc(money(thisAmt, cur))}</td></tr>
+      <tr><td>Total paid to date</td><td>${esc(money(totalPaid, cur))}</td></tr>
+      <tr class="grand"><td>${isFull ? 'Amount paid' : 'Balance due'}</td><td>${esc(money(isFull ? totalPaid : bal, cur))}</td></tr>
+    </table>
+  </div>
+
+  <div class="foot">Thank you for your payment.${inv.number ? ' Reference: ' + esc(inv.number) + '.' : ''}</div>
+</div>
+</body>
+</html>`;
+}
+
+async function generateReceiptPdf(invoiceId, paymentId) {
+  const inv = resolveReceiptInvoice(invoiceId);
+  if (!inv) {
+    toast('Open an invoice with payments to download a receipt.');
+    return;
+  }
+  ensurePayments(inv);
+  if (!inv.payments.length) {
+    toast('Record a payment before downloading a receipt.');
+    return;
+  }
+  let payment = paymentId ? inv.payments.find(p => p.id === paymentId) : null;
+  if (!payment) {
+    payment = inv.payments.slice().sort((a, b) => String(a.date || '').localeCompare(String(b.date || ''))).pop();
+  }
+
+  const bodyHtml = buildReceiptDocument(inv, payment);
+  if (!bodyHtml) {
+    toast('Could not build receipt content.');
+    return;
+  }
+
+  const filename = 'Receipt-' + String(inv.number || 'payment').replace(/[^a-zA-Z0-9-_]/g, '_') +
+    (payment && payment.date ? '-' + String(payment.date).slice(0, 10) : '') + '.pdf';
+
+  // Primary path: open print-ready page (works everywhere, including mobile)
+  // User chooses "Save as PDF" in the print dialog — most reliable.
+  try {
+    const w = window.open('', '_blank');
+    if (w) {
+      w.document.open();
+      // bodyHtml is a complete HTML document with styles
+      const printScript = '<script>window.onload=function(){setTimeout(function(){try{window.focus();window.print();}catch(e){}},250);};</'+'script>';
+      let doc = bodyHtml;
+      if (doc.indexOf('</body>') !== -1) doc = doc.replace('</body>', printScript + '</body>');
+      else doc += printScript;
+      w.document.write(doc);
+      w.document.close();
+      toast('Use Print → Save as PDF in the dialog.');
+      return;
+    }
+  } catch (e) {
+    console.warn('print window failed', e);
+  }
+
+  // Secondary: html2pdf download
+  try {
+    const html2pdf = await loadHtml2Pdf();
+    toast('Generating PDF…');
+    const host = document.createElement('div');
+    host.id = 'receiptPdfHost';
+    // Must be in the viewport with real size — opacity 0 still often works if left/top are 0
+    host.style.cssText = 'position:fixed;left:0;top:0;width:794px;background:#fff;z-index:99999;';
+    host.innerHTML = bodyHtml;
+    document.body.appendChild(host);
+    // Force layout
+    void host.offsetHeight;
+    await new Promise(r => setTimeout(r, 150));
+
+    await html2pdf().set({
+      margin: 10,
+      filename: filename,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff' },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).from(host).save();
+
+    host.remove();
+    toast('Receipt PDF downloaded.');
+  } catch (err) {
+    console.warn(err);
+    const existing = document.getElementById('receiptPdfHost');
+    if (existing) existing.remove();
+    toast('Could not generate PDF. Allow pop-ups and try again.');
+  }
+}
+
+function printReceipt(invoiceId, paymentId) {
+  return generateReceiptPdf(invoiceId, paymentId);
+}
+
+
+function renderPayments() {
+  if (!edit) return;
+  ensurePayments(edit);
+  syncPaidFlag(edit);
+  const cur = edit.currency;
+  const tot = total(edit);
+  const paidAmt = amountPaid(edit);
+  const bal = balanceDue(edit);
+  const elT = $('#payTotal');
+  const elP = $('#payPaid');
+  const elB = $('#payBalance');
+  if (elT) elT.textContent = money(tot, cur);
+  if (elP) elP.textContent = money(paidAmt, cur);
+  if (elB) elB.textContent = money(bal, cur);
+  const dateEl = $('#payDate');
+  if (dateEl && !dateEl.value) dateEl.value = today;
+  const list = $('#payList');
+  if (list) {
+    if (!edit.payments.length) {
+      list.innerHTML = '<li style="color:var(--muted);border:0">No payments recorded yet.</li>';
+    } else {
+      list.innerHTML = edit.payments
+        .slice()
+        .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+        .map(p => {
+          const d = p.date ? new Date(p.date + 'T12:00:00').toLocaleDateString() : '—';
+          return `<li>
+            <span><b>${money(p.amount, cur)}</b> · ${d}${p.method ? ' · ' + p.method : ''}${p.note ? ' · ' + p.note : ''}</span>
+            <span class="pay-actions">
+              <button class="button small" type="button" data-receipt-pay="${p.id}">PDF</button>
+              <button class="button small danger" type="button" data-del-pay="${p.id}">Remove</button>
+            </span>
+          </li>`;
+        }).join('');
+    }
+  }
+  updateReceiptButtons();
+}
+
+function updateReceiptButtons() {
+  const show = !!(edit && amountPaid(edit) > 0);
+  const a = document.getElementById('downloadReceipt');
+  const b = document.getElementById('headerReceiptBtn');
+  if (a) a.style.display = show ? '' : 'none';
+  if (b) b.style.display = show ? '' : 'none';
+}
+
+function addPaymentToEdit(amount, date, note, method) {
+  if (!edit) return;
+  let amt = Number(amount);
+  if (!Number.isFinite(amt) || amt <= 0) {
+    toast('Enter a payment amount greater than zero.');
+    return;
+  }
+  ensurePayments(edit);
+  const bal = balanceDue(edit);
+  if (bal > 0 && amt > bal + 0.001) {
+    toast('Payment is higher than balance (' + money(bal, edit.currency) + ').');
+  }
+  amt = Math.round(amt * 100) / 100;
+  edit.payments.push({
+    id: crypto.randomUUID(),
+    amount: amt,
+    date: date || today,
+    method: (method || 'Bank transfer').trim() || 'Bank transfer',
+    note: (note || '').trim()
+  });
+  if (edit.status === 'Draft') edit.status = 'Sent';
+  syncPaidFlag(edit);
+  // Persist immediately so partial payments survive navigation
+  const idx = db.invoices.findIndex(i => i.id === edit.id);
+  const copy = structuredClone(edit);
+  delete copy._nextAfterSave;
+  if (idx >= 0) db.invoices[idx] = copy;
+  else {
+    db.invoices.unshift(copy);
+    if (edit._nextAfterSave) {
+      db.profile.nextInvoiceNumber = edit._nextAfterSave;
+      delete edit._nextAfterSave;
+    }
+  }
+  save();
+  renderPayments();
+  preview();
+  toast(edit.paid ? 'Paid in full.' : 'Partial payment recorded.');
+}
+
+
+
+/* Payment + receipt UI wiring */
+(function wirePaymentsUi() {
+  const receiptBtn = document.getElementById('downloadReceipt');
+  if (receiptBtn) receiptBtn.onclick = () => printReceipt();
+
+  const addPayBtn = document.getElementById('addPayment');
+  if (addPayBtn) addPayBtn.onclick = () => {
+    addPaymentToEdit($('#payAmount')?.value, $('#payDate')?.value, $('#payNote')?.value, $('#payMethod')?.value);
+    if ($('#payAmount')) $('#payAmount').value = '';
+    if ($('#payNote')) $('#payNote').value = '';
+  };
+
+  const payFullBtn = document.getElementById('payInFull');
+  if (payFullBtn) payFullBtn.onclick = () => {
+    if (!edit) return;
+    const bal = balanceDue(edit);
+    if (bal <= 0.001) {
+      toast('Nothing left to pay on this invoice.');
+      return;
+    }
+    addPaymentToEdit(bal, $('#payDate')?.value || today, 'Paid in full', $('#payMethod')?.value);
+  };
+
+  document.addEventListener('click', e => {
+    const rc = e.target.closest('[data-receipt]');
+    if (rc) {
+      e.preventDefault();
+      e.stopPropagation();
+      printReceipt(rc.dataset.receipt);
+      return;
+    }
+    const rp = e.target.closest('[data-receipt-pay]');
+    if (rp && edit) {
+      e.preventDefault();
+      printReceipt(edit.id, rp.dataset.receiptPay);
+      return;
+    }
+    const dp = e.target.closest('[data-del-pay]');
+    if (dp && edit) {
+      e.preventDefault();
+      edit.payments = ensurePayments(edit).filter(p => p.id !== dp.dataset.delPay);
+      syncPaidFlag(edit);
+      const idx = db.invoices.findIndex(i => i.id === edit.id);
+      if (idx >= 0) {
+        const copy = structuredClone(edit);
+        delete copy._nextAfterSave;
+        db.invoices[idx] = copy;
+        save();
+      }
+      renderPayments();
+      preview();
+      toast('Payment removed.');
+    }
+  });
+})();
 
 /* Init */
 switchTo('dashboard');
