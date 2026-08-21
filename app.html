@@ -235,6 +235,22 @@ input:focus:not(:focus-visible) {
   box-shadow: 0 -4px 20px rgba(15,23,42,0.06);
   transition: background var(--ease), border-color var(--ease);
 }
+.bottom-nav.nav-hidden {
+  display: none !important;
+}
+.editor-back {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  padding: 8px 0;
+  color: var(--blue);
+  font-weight: 700;
+  font-size: 14px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
 [data-theme="dark"] .bottom-nav {
   box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
 }
@@ -545,6 +561,33 @@ input:focus:not(:focus-visible) {
   border-color: var(--blue);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue) 20%, transparent);
 }
+.field input.invalid,
+.field textarea.invalid,
+.field select.invalid,
+.line input.invalid {
+  border-color: var(--red) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--red) 18%, transparent);
+}
+.field-error {
+  display: none;
+  margin: -8px 0 12px;
+  font-size: 12px;
+  color: var(--red-text);
+  font-weight: 600;
+}
+.field-error.show { display: block; }
+.form-error-banner {
+  display: none;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--red-bg);
+  border: 1px solid var(--red-border);
+  color: var(--red-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+.form-error-banner.show { display: block; }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 
@@ -642,8 +685,8 @@ input:focus:not(:focus-visible) {
   border-bottom: 3px solid var(--blue);
   padding-bottom: 20px;
 }
-.pbrand { font-size: 20px; font-weight: 800; }
-.pbrand em { font-style: normal; color: var(--blue); }
+.pbrand { font-size: 20px; font-weight: 800; color: #111; }
+.pbrand em { font-style: normal; color: inherit; }
 .ptitle {
   color: var(--blue);
   font-size: 11px;
@@ -855,6 +898,8 @@ input:focus:not(:focus-visible) {
 @media (max-width: 768px) {
   .side { display: none; }
   .bottom-nav { display: flex; }
+  .bottom-nav.nav-hidden { display: none !important; }
+  .editor-back { display: inline-flex !important; }
 
   .main {
     padding: 20px 16px;
@@ -925,7 +970,13 @@ input:focus:not(:focus-visible) {
 /* =========================================================
    PRINT
    ========================================================= */
+@page {
+  size: A4;
+  margin: 14mm;
+}
 @media print {
+  /* Hide browser UI chrome where supported; also disable headers/footers in the print dialog */
+
   .side, .bottom-nav, .top, .form, .search-bar,
   .backup-actions, .preview-toggle, .theme-toggle {
     display: none !important;
@@ -995,6 +1046,7 @@ input:focus:not(:focus-visible) {
       Private, local invoicing. Your data stays in this browser.
       <div id="accountLine" style="margin-top:10px;font-size:12px;line-height:1.5">
         <a href="index.html" style="color:var(--blue);font-weight:600;text-decoration:none">Account</a>
+        <button type="button" id="appLogoutBtn" style="display:none;margin-top:8px;padding:0;border:0;background:none;color:var(--muted);font:inherit;font-size:12px;font-weight:600;cursor:pointer">Log out</button>
       </div>
     </div>
   </aside>
@@ -1006,7 +1058,7 @@ input:focus:not(:focus-visible) {
         <p id="subheading">Know what has been paid and what needs attention.</p>
       </div>
       <div class="buttons">
-        <button class="button" onclick="window.print()">Print / save PDF</button>
+        <button class="button" onclick="printInvoice()">Print / save PDF</button>
         <button class="button primary" id="new">+ Create invoice</button>
       </div>
     </header>
@@ -1170,9 +1222,11 @@ input:focus:not(:focus-visible) {
     </section>
 
     <section class="view" id="editor">
+      <button type="button" class="editor-back" id="editorBack">← Back to invoices</button>
       <div class="form-layout">
         <div class="form">
           <h2 id="editorHeading">Create invoice</h2>
+          <div class="form-error-banner" id="editorErrors"></div>
           <div class="three">
             <div class="field"><label>Invoice no.</label><input id="number"></div>
             <div class="field">
@@ -1243,6 +1297,7 @@ input:focus:not(:focus-visible) {
             <div>
               <div class="ptitle">Invoice</div>
               <div class="pnum" id="pNumber"></div>
+              <div class="pnum" id="pIssue" style="margin-top:4px"></div>
             </div>
           </div>
           <div class="parties">
@@ -1293,8 +1348,9 @@ input:focus:not(:focus-visible) {
 
 <div class="modalback" id="modal">
   <div class="modal">
-    <h2>Add a client</h2>
-    <p>Save a client once and invoice them in seconds.</p>
+    <h2 id="clientModalTitle">Add a client</h2>
+    <p id="clientModalSub">Save a client once and invoice them in seconds.</p>
+    <div class="form-error-banner" id="clientErrors"></div>
     <div class="field"><label>Name / company</label><input id="mName"></div>
     <div class="field"><label>Email</label><input id="mEmail"></div>
     <div class="field"><label>Tax ID / VAT / ABN (optional)</label><input id="mTaxId" placeholder="Client tax ID if needed"></div>
@@ -1352,6 +1408,7 @@ if (db.profile) {
   db.profile.paymentDetails = db.profile.paymentDetails ?? '';
 }
 let edit = null;
+let editingClientId = null;
 let pendingConfirm = null;
 const fx = { USD: 1, EUR: 1.08, GBP: 1.27, AUD: 0.66, NGN: 0.00067 };
 
@@ -1393,7 +1450,9 @@ function client(id) {
   return db.clients.find(x => x.id === id);
 }
 function lineAmount(x) {
-  return Math.max(0, +x.qty || 0) * Math.max(0, +x.rate || 0);
+  const q = parseFloat(x.qty);
+  const r = parseFloat(x.rate);
+  return Math.max(0, Number.isFinite(q) ? q : 0) * Math.max(0, Number.isFinite(r) ? r : 0);
 }
 function sub(i) {
   return i.lines.reduce((n, x) => n + lineAmount(x), 0);
@@ -1406,6 +1465,12 @@ function total(i) {
 }
 function report(i) {
   return total(i) * fx[i.currency] / fx[db.profile.reporting];
+}
+function formatRate(x) {
+  const n = parseFloat(x);
+  if (!Number.isFinite(n)) return '0';
+  // Plain entered figure — no currency symbol
+  return n % 1 === 0 ? String(n) : String(Math.round(n * 100) / 100);
 }
 function money(x, c) {
   return new Intl.NumberFormat('en-US', {
@@ -1442,8 +1507,12 @@ function switchTo(v) {
   $('#subheading').textContent = h[1];
   const bottomNav = document.querySelector('.bottom-nav');
   if (bottomNav) {
-    bottomNav.style.display = (v === 'editor' && window.innerWidth <= 768) ? 'none' : '';
+    // Hide tab bar only while editing an invoice; always restore on other pages
+    bottomNav.classList.toggle('nav-hidden', v === 'editor');
+    bottomNav.style.display = ''; // clear any old inline styles
   }
+  const backBtn = document.getElementById('editorBack');
+  if (backBtn) backBtn.style.display = v === 'editor' ? '' : 'none';
   if (v === 'dashboard') dashboard();
   if (v === 'invoices') invoices();
   if (v === 'clients') clients();
@@ -1582,6 +1651,7 @@ function clients() {
           <td>${c.taxId || '—'}</td>
           <td class="right">${count}</td>
           <td class="actions">
+            <button class="button small" data-edit-client="${c.id}">Edit</button>
             <button class="button small danger" data-delete-client="${c.id}">Delete</button>
           </td>
         </tr>`;
@@ -1639,6 +1709,8 @@ function newInvoice() {
 
 function editor() {
   switchTo('editor');
+  showBanner('editorErrors', []);
+  clearInvalid(document.getElementById('editor'));
   $('#number').value = edit.number;
   $('#currency').value = edit.currency;
   $('#tax').value = edit.tax;
@@ -1660,28 +1732,42 @@ function editor() {
 function lines() {
   $('#lines').innerHTML = edit.lines.map((x, n) => {
     const amt = lineAmount(x);
-    const invalid = (+x.qty < 0) || (+x.rate < 0);
-    return `<div class="line">
+    const rateVal = x.rate === '' || x.rate === null || x.rate === undefined ? '' : x.rate;
+    const invalid = (+x.qty < 0) || (x.rate !== '' && +x.rate < 0);
+    return `<div class="line" data-line="${n}">
       <input data-n="${n}" data-f="desc" value="${x.desc || ''}" placeholder="Description">
-      <input data-n="${n}" data-f="qty" value="${x.qty}" type="number" min="0" step="0.01">
+      <input data-n="${n}" data-f="qty" value="${x.qty}" type="text" inputmode="decimal" placeholder="1">
       <input data-n="${n}" data-f="unit" value="${x.unit || ''}" placeholder="hrs">
-      <input data-n="${n}" data-f="rate" value="${x.rate}" type="number" min="0" step="0.01">
-      <div class="amount-display ${invalid ? 'invalid' : ''}">${money(amt, edit.currency)}</div>
+      <input data-n="${n}" data-f="rate" value="${rateVal}" type="text" inputmode="decimal" placeholder="0">
+      <div class="amount-display ${invalid ? 'invalid' : ''}" data-amount="${n}">${money(amt, edit.currency)}</div>
       <button class="remove" data-r="${n}" title="Remove line">×</button>
     </div>`;
   }).join('');
 }
 
+function updateLineAmount(n) {
+  if (!edit || !edit.lines[n]) return;
+  const el = document.querySelector(`[data-amount="${n}"]`);
+  if (!el) return;
+  const x = edit.lines[n];
+  const invalid = (+x.qty < 0) || (x.rate !== '' && +x.rate < 0);
+  el.textContent = money(lineAmount(x), edit.currency);
+  el.classList.toggle('invalid', invalid);
+}
+
 function preview() {
   const c = client(edit.client);
   const p = db.profile;
-  $('#pBusiness').innerHTML = (p.name || 'Your Company').replace(/\s+(\S+)$/, ' <em>$1</em>');
+  $('#pBusiness').textContent = p.name || 'Your Company';
   const contactBits = [p.email, p.phone, p.address].filter(Boolean);
   if (p.taxId) contactBits.push((p.taxLabel || 'Tax ID') + ': ' + p.taxId);
   $('#pContact').textContent = contactBits.join('\n');
   $('#pLogo').style.display = p.logo ? 'block' : 'none';
   $('#pLogo').src = p.logo || '';
   $('#pNumber').textContent = edit.number + ' · ' + edit.currency;
+  const issueLabel = edit.issue ? new Date(edit.issue + 'T12:00:00').toLocaleDateString() : '';
+  const pIssue = document.getElementById('pIssue');
+  if (pIssue) pIssue.textContent = issueLabel ? ('Issued ' + issueLabel) : '';
   $('#pClient').textContent = c?.name || 'Client';
   // client tax id line
   let billExtra = document.getElementById('pClientTax');
@@ -1703,7 +1789,7 @@ function preview() {
       <td>${x.desc || 'Service'}</td>
       <td class="right">${x.qty}</td>
       <td class="right">${x.unit || '—'}</td>
-      <td class="right">${money(x.rate, edit.currency)}</td>
+      <td class="right">${formatRate(x.rate)}</td>
       <td class="right">${money(lineAmount(x), edit.currency)}</td>
     </tr>`
   ).join('');
@@ -1714,13 +1800,117 @@ function preview() {
   $('#pTotal').textContent = money(total(edit), edit.currency);
 }
 
-function persist(s) {
-  for (const line of edit.lines) {
-    if (+line.qty < 0 || +line.rate < 0) {
-      toast('Quantity and rate must be zero or positive.');
-      return;
-    }
+function clearInvalid(root) {
+  (root || document).querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+  (root || document).querySelectorAll('.field-error.show, .form-error-banner.show').forEach(el => {
+    el.classList.remove('show');
+    el.textContent = '';
+  });
+}
+
+function showBanner(id, messages) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const list = (messages || []).filter(Boolean);
+  if (!list.length) {
+    el.classList.remove('show');
+    el.textContent = '';
+    return;
   }
+  el.innerHTML = list.map(m => `<div>${m}</div>`).join('');
+  el.classList.add('show');
+}
+
+function isValidEmail(v) {
+  if (!v) return true; // optional
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
+
+function normalizeLineNumbers() {
+  if (!edit) return;
+  edit.lines.forEach(line => {
+    if (line.qty === '' || line.qty === null || line.qty === undefined) line.qty = 0;
+    else line.qty = parseFloat(line.qty);
+    if (!Number.isFinite(line.qty)) line.qty = 0;
+
+    if (line.rate === '' || line.rate === null || line.rate === undefined) line.rate = 0;
+    else line.rate = parseFloat(line.rate);
+    if (!Number.isFinite(line.rate)) line.rate = 0;
+  });
+}
+
+function validateInvoice(requireSent) {
+  const errors = [];
+  clearInvalid(document.getElementById('editor'));
+  if (!edit) return ['Nothing to save.'];
+
+  if (!String(edit.number || '').trim()) {
+    errors.push('Invoice number is required.');
+    $('#number')?.classList.add('invalid');
+  }
+  if (!edit.issue) {
+    errors.push('Issue date is required.');
+    $('#issue')?.classList.add('invalid');
+  }
+  if (!edit.due) {
+    errors.push('Due date is required.');
+    $('#due')?.classList.add('invalid');
+  }
+  if (edit.issue && edit.due && edit.due < edit.issue) {
+    errors.push('Due date cannot be before the issue date.');
+    $('#due')?.classList.add('invalid');
+  }
+  if (requireSent && !edit.client) {
+    errors.push('Select a client before marking as sent.');
+    $('#client')?.classList.add('invalid');
+  }
+  if (!edit.lines || !edit.lines.length) {
+    errors.push('Add at least one line item.');
+  }
+
+  let hasLineError = false;
+  (edit.lines || []).forEach((line, n) => {
+    const qty = parseFloat(line.qty);
+    const rate = parseFloat(line.rate);
+    const row = document.querySelector(`.line[data-line="${n}"]`);
+    if (!String(line.desc || '').trim()) {
+      errors.push(`Line ${n + 1}: description is required.`);
+      row?.querySelector('[data-f="desc"]')?.classList.add('invalid');
+      hasLineError = true;
+    }
+    if (!Number.isFinite(qty) || qty < 0) {
+      errors.push(`Line ${n + 1}: quantity must be zero or greater.`);
+      row?.querySelector('[data-f="qty"]')?.classList.add('invalid');
+      hasLineError = true;
+    }
+    if (!Number.isFinite(rate) || rate < 0) {
+      errors.push(`Line ${n + 1}: rate must be zero or greater.`);
+      row?.querySelector('[data-f="rate"]')?.classList.add('invalid');
+      hasLineError = true;
+    }
+  });
+
+  if (requireSent && total(edit) <= 0) {
+    errors.push('Total must be greater than zero to mark as sent.');
+  }
+
+  // de-dupe while preserving order
+  return [...new Set(errors)];
+}
+
+function persist(s) {
+  normalizeLineNumbers();
+  const requireSent = s === 'Sent';
+  const errors = validateInvoice(requireSent);
+  if (errors.length) {
+    showBanner('editorErrors', errors);
+    toast(errors[0]);
+    document.getElementById('editorErrors')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
+  showBanner('editorErrors', []);
+  clearInvalid(document.getElementById('editor'));
+
   edit.status = s || edit.status;
   const n = db.invoices.findIndex(i => i.id === edit.id);
   const isNew = n < 0;
@@ -1783,6 +1973,13 @@ document.addEventListener('click', e => {
     }
   }
 
+  const editClient = e.target.closest('[data-edit-client]');
+  if (editClient) {
+    const c = db.clients.find(x => x.id === editClient.dataset.editClient);
+    if (c) openClientModal(c);
+    return;
+  }
+
   const delClient = e.target.closest('[data-delete-client]');
   if (delClient) {
     const c = db.clients.find(x => x.id === delClient.dataset.deleteClient);
@@ -1803,12 +2000,26 @@ document.addEventListener('click', e => {
 
 document.addEventListener('input', e => {
   if (e.target.dataset.n !== undefined && edit) {
-    const x = edit.lines[e.target.dataset.n];
+    const n = e.target.dataset.n;
+    const x = edit.lines[n];
+    if (!x) return;
     const f = e.target.dataset.f;
-    if (f === 'desc' || f === 'unit') x[f] = e.target.value;
-    else x[f] = Number(e.target.value);
-    lines();
+    const raw = e.target.value;
+    if (f === 'desc' || f === 'unit') {
+      x[f] = raw;
+    } else if (f === 'qty' || f === 'rate') {
+      // Keep raw string while typing so backspace/edit stays smooth
+      // Empty allowed; numeric parse only for amount math
+      if (raw === '' || raw === '.' || raw === '-' || raw === '-.') {
+        x[f] = raw === '' ? '' : raw;
+      } else {
+        const num = Number(raw);
+        x[f] = Number.isFinite(num) ? raw : x[f]; // keep text as typed
+      }
+      updateLineAmount(n);
+    }
     preview();
+    return; // never re-render lines() on each keystroke
   }
   const map = { number: 'number', currency: 'currency', tax: 'tax', issue: 'issue', due: 'due', client: 'client', title: 'title', note: 'note', terms: 'terms', paid: 'paid' };
   if (map[e.target.id] && edit) {
@@ -1818,6 +2029,21 @@ document.addEventListener('input', e => {
   if (e.target.id === 'invoiceSearch') invoices();
 });
 
+// Normalize qty/rate to numbers when leaving the field
+document.addEventListener('change', e => {
+  if (e.target.dataset.n !== undefined && edit && (e.target.dataset.f === 'qty' || e.target.dataset.f === 'rate')) {
+    const n = e.target.dataset.n;
+    const f = e.target.dataset.f;
+    const x = edit.lines[n];
+    if (!x) return;
+    const num = parseFloat(e.target.value);
+    x[f] = Number.isFinite(num) ? num : 0;
+    e.target.value = x[f];
+    updateLineAmount(n);
+    preview();
+  }
+});
+
 $('#new').onclick = newInvoice;
 $('#addLine').onclick = () => {
   if (!edit) return;
@@ -1825,6 +2051,8 @@ $('#addLine').onclick = () => {
   lines();
   preview();
 };
+const editorBackBtn = document.getElementById('editorBack');
+if (editorBackBtn) editorBackBtn.onclick = () => switchTo('invoices');
 $('#save').onclick = () => persist('Draft');
 $('#send').onclick = () => persist('Sent');
 
@@ -1835,32 +2063,106 @@ $('#togglePreview').onclick = () => {
   btn.textContent = panel.classList.contains('show-mobile') ? 'Hide invoice preview' : 'Show invoice preview';
 };
 
-$('#addClient').onclick = () => {
+function openClientModal(client) {
+  editingClientId = client ? client.id : null;
+  $('#clientModalTitle').textContent = client ? 'Edit client' : 'Add a client';
+  $('#clientModalSub').textContent = client
+    ? 'Update this client’s details. Existing invoices keep the same link.'
+    : 'Save a client once and invoice them in seconds.';
+  $('#mName').value = client?.name || '';
+  $('#mEmail').value = client?.email || '';
+  $('#mTaxId').value = client?.taxId || '';
+  $('#confirm').textContent = client ? 'Update client' : 'Save client';
+  clearInvalid(document.getElementById('modal'));
+  showBanner('clientErrors', []);
   $('#modal').classList.add('show');
   $('#mName').focus();
+}
+
+$('#addClient').onclick = () => openClientModal(null);
+$('#cancel').onclick = () => {
+  $('#modal').classList.remove('show');
+  editingClientId = null;
 };
-$('#cancel').onclick = () => $('#modal').classList.remove('show');
 $('#confirm').onclick = () => {
+  clearInvalid(document.getElementById('modal'));
+  showBanner('clientErrors', []);
   const n = $('#mName').value.trim();
-  if (!n) return;
-  db.clients.push({
-    id: crypto.randomUUID(),
+  const email = $('#mEmail').value.trim();
+  const taxId = $('#mTaxId').value.trim();
+  const errors = [];
+  if (!n) {
+    errors.push('Client name is required.');
+    $('#mName')?.classList.add('invalid');
+  }
+  if (email && !isValidEmail(email)) {
+    errors.push('Enter a valid email address.');
+    $('#mEmail')?.classList.add('invalid');
+  }
+  if (errors.length) {
+    showBanner('clientErrors', errors);
+    toast(errors[0]);
+    return;
+  }
+  const payload = {
     name: n,
-    email: $('#mEmail').value.trim(),
-    taxId: $('#mTaxId').value.trim()
-  });
+    email,
+    taxId
+  };
+  if (editingClientId) {
+    const c = db.clients.find(x => x.id === editingClientId);
+    if (c) Object.assign(c, payload);
+    toast('Client updated.');
+  } else {
+    db.clients.push({ id: crypto.randomUUID(), ...payload });
+    toast('Client saved.');
+  }
   save();
+  editingClientId = null;
   $('#mName').value = $('#mEmail').value = $('#mTaxId').value = '';
   $('#modal').classList.remove('show');
   clients();
-  toast('Client saved.');
+  // Refresh client dropdown if editor is open
+  if (edit && $('#client')) {
+    const prev = edit.client;
+    $('#client').innerHTML = '<option value="">Select client…</option>' +
+      db.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    $('#client').value = prev || '';
+  }
 };
 
 $('#saveProfile').onclick = () => {
+  clearInvalid(document.getElementById('profile'));
+  const errors = [];
+  const nameEl = document.querySelector('[data-p="name"]');
+  const emailEl = document.querySelector('[data-p="email"]');
+  const nextEl = document.querySelector('[data-p="nextInvoiceNumber"]');
+  const name = (nameEl?.value || '').trim();
+  const email = (emailEl?.value || '').trim();
+  const nextNum = Number(nextEl?.value);
+
+  if (!name) {
+    errors.push('Business name is required.');
+    nameEl?.classList.add('invalid');
+  }
+  if (email && !isValidEmail(email)) {
+    errors.push('Enter a valid business email.');
+    emailEl?.classList.add('invalid');
+  }
+  if (nextEl && (!Number.isFinite(nextNum) || nextNum < 1)) {
+    errors.push('Next invoice number must be 1 or greater.');
+    nextEl?.classList.add('invalid');
+  }
+  if (errors.length) {
+    toast(errors[0]);
+    return;
+  }
+
   document.querySelectorAll('[data-p]').forEach(e => {
     let val = e.value;
     if (e.dataset.p === 'defaultTax' || e.dataset.p === 'nextInvoiceNumber') val = Number(val) || 0;
     if (e.dataset.p === 'invoicePrefix') val = (val || 'INV').trim() || 'INV';
+    if (e.dataset.p === 'name' || e.dataset.p === 'email') val = (val || '').trim();
     db.profile[e.dataset.p] = val;
   });
   save();
@@ -1944,27 +2246,64 @@ switchTo('dashboard');
 };
 
 
-/* Optional account status (magic link only — no payments) */
+/* Shared account status + profile sync (magic link only — no payments) */
 const SUPABASE_URL = 'https://spzrnnqeshejdmnocvut.supabase.co';
 const SUPABASE_ANON_KEY = 'PASTE_YOUR_ANON_KEY_HERE';
+
+async function getSupabase() {
+  if (SUPABASE_ANON_KEY.includes('PASTE_YOUR')) return null;
+  if (!window.supabase) {
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+      s.onload = resolve; s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+  return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
+async function syncProfile(client, user) {
+  if (!client || !user) return;
+  const { error } = await client.from('profiles').upsert({
+    id: user.id,
+    email: user.email || null,
+    full_name: user.user_metadata?.full_name || ''
+  }, { onConflict: 'id' });
+  if (error) console.warn('profile sync', error.message);
+}
+
 (async function initAccountLine() {
   const line = document.getElementById('accountLine');
-  if (!line || SUPABASE_ANON_KEY.includes('PASTE_YOUR')) return;
-  try {
-    if (!window.supabase) {
-      await new Promise((resolve, reject) => {
-        const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-        s.onload = resolve; s.onerror = reject;
-        document.head.appendChild(s);
-      });
-    }
-    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data: { session } } = await client.auth.getSession();
+  const logoutBtn = document.getElementById('appLogoutBtn');
+  const client = await getSupabase();
+  if (!client || !line) return;
+
+  async function render(session) {
     if (session?.user) {
-      line.innerHTML = 'Signed in as <b style="color:var(--text)">' + session.user.email + '</b><br><a href="index.html" style="color:var(--blue);font-weight:600;text-decoration:none">Manage account</a>';
+      await syncProfile(client, session.user);
+      line.innerHTML = 'Signed in as <b style="color:var(--text)">' + (session.user.email || '') + '</b>';
+      if (logoutBtn) {
+        logoutBtn.style.display = 'block';
+        line.appendChild(logoutBtn);
+      }
+    } else {
+      line.innerHTML = '<a href="index.html" style="color:var(--blue);font-weight:600;text-decoration:none">Sign in</a>';
+      if (logoutBtn) logoutBtn.style.display = 'none';
     }
-  } catch (e) { /* local app still works */ }
+  }
+
+  const { data: { session } } = await client.auth.getSession();
+  await render(session);
+  client.auth.onAuthStateChange((_e, session) => { render(session); });
+
+  if (logoutBtn) {
+    logoutBtn.onclick = async () => {
+      await client.auth.signOut();
+      toast('Logged out.');
+      // Keep user on app; session cleared on index too (same origin storage)
+    };
+  }
 })();
 
 /* Init */
