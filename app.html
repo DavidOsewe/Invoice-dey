@@ -928,13 +928,16 @@ input:focus:not(:focus-visible) {
   .two, .three { grid-template-columns: 1fr; }
 
   .line, .line-header {
-    grid-template-columns: 1fr 56px 72px 28px;
+    grid-template-columns: 1fr 52px 64px 28px;
   }
+  /* Hide unit only — keep rate so users can enter it on mobile */
   .line input[data-f="unit"],
-  .line-header span:nth-child(3),
-  .line input[data-f="rate"],
-  .line-header span:nth-child(4) {
+  .line-header span:nth-child(3) {
     display: none;
+  }
+  .line-header span:nth-child(4),
+  .line input[data-f="rate"] {
+    display: block;
   }
 
   .form { padding: 18px; }
@@ -1058,7 +1061,7 @@ input:focus:not(:focus-visible) {
         <p id="subheading">Know what has been paid and what needs attention.</p>
       </div>
       <div class="buttons">
-        <button class="button" onclick="printInvoice()">Print / save PDF</button>
+        <button class="button" onclick="printInvoice();return false;">Print / save PDF</button>
         <button class="button primary" id="new">+ Create invoice</button>
       </div>
     </header>
@@ -1147,12 +1150,33 @@ input:focus:not(:focus-visible) {
           <div class="field">
             <label>Reporting currency</label>
             <select data-p="reporting" id="reportingSelect">
-              <option value="USD">USD — US Dollar</option>
-              <option value="EUR">EUR — Euro</option>
-              <option value="GBP">GBP — British Pound</option>
-              <option value="AUD">AUD — Australian Dollar</option>
-              <option value="NGN">NGN — Nigerian Naira</option>
-            </select>
+                <option value="USD">USD — US Dollar</option>
+                <option value="EUR">EUR — Euro</option>
+                <option value="GBP">GBP — British Pound</option>
+                <option value="AUD">AUD — Australian Dollar</option>
+                <option value="CAD">CAD — Canadian Dollar</option>
+                <option value="NZD">NZD — New Zealand Dollar</option>
+                <option value="CHF">CHF — Swiss Franc</option>
+                <option value="JPY">JPY — Japanese Yen</option>
+                <option value="CNY">CNY — Chinese Yuan</option>
+                <option value="HKD">HKD — Hong Kong Dollar</option>
+                <option value="SGD">SGD — Singapore Dollar</option>
+                <option value="INR">INR — Indian Rupee</option>
+                <option value="NGN">NGN — Nigerian Naira</option>
+                <option value="ZAR">ZAR — South African Rand</option>
+                <option value="KES">KES — Kenyan Shilling</option>
+                <option value="GHS">GHS — Ghanaian Cedi</option>
+                <option value="AED">AED — UAE Dirham</option>
+                <option value="SAR">SAR — Saudi Riyal</option>
+                <option value="SEK">SEK — Swedish Krona</option>
+                <option value="NOK">NOK — Norwegian Krone</option>
+                <option value="DKK">DKK — Danish Krone</option>
+                <option value="PLN">PLN — Polish Zloty</option>
+                <option value="BRL">BRL — Brazilian Real</option>
+                <option value="MXN">MXN — Mexican Peso</option>
+                <option value="PHP">PHP — Philippine Peso</option>
+                <option value="THB">THB — Thai Baht</option>
+</select>
           </div>
         </div>
         <div class="field"><label>Website / address</label><input data-p="address"></div>
@@ -1163,16 +1187,21 @@ input:focus:not(:focus-visible) {
         </p>
         <div class="three">
           <div class="field">
-            <label>Tax ID / VAT / ABN / EIN</label>
+            <label>Business tax ID number</label>
             <input data-p="taxId" placeholder="e.g. EU VAT, ABN, or EIN">
           </div>
           <div class="field">
-            <label>Tax label</label>
+            <label>Tax type (shown on invoices)</label>
             <select data-p="taxLabel" id="taxLabelSelect">
               <option value="Tax">Tax</option>
-              <option value="VAT">VAT</option>
-              <option value="GST">GST</option>
-              <option value="Sales Tax">Sales Tax</option>
+              <option value="VAT">VAT (EU / UK)</option>
+              <option value="GST">GST (AU / NZ / SG)</option>
+              <option value="Sales Tax">Sales Tax (US)</option>
+              <option value="HST">HST (Canada)</option>
+              <option value="SST">SST</option>
+              <option value="IVA">IVA</option>
+              <option value="ABN">ABN (Australia ID label)</option>
+              <option value="EIN">EIN (US ID label)</option>
             </select>
           </div>
           <div class="field">
@@ -1236,8 +1265,29 @@ input:focus:not(:focus-visible) {
                 <option value="EUR">EUR</option>
                 <option value="GBP">GBP</option>
                 <option value="AUD">AUD</option>
+                <option value="CAD">CAD</option>
+                <option value="NZD">NZD</option>
+                <option value="CHF">CHF</option>
+                <option value="JPY">JPY</option>
+                <option value="CNY">CNY</option>
+                <option value="HKD">HKD</option>
+                <option value="SGD">SGD</option>
+                <option value="INR">INR</option>
                 <option value="NGN">NGN</option>
-              </select>
+                <option value="ZAR">ZAR</option>
+                <option value="KES">KES</option>
+                <option value="GHS">GHS</option>
+                <option value="AED">AED</option>
+                <option value="SAR">SAR</option>
+                <option value="SEK">SEK</option>
+                <option value="NOK">NOK</option>
+                <option value="DKK">DKK</option>
+                <option value="PLN">PLN</option>
+                <option value="BRL">BRL</option>
+                <option value="MXN">MXN</option>
+                <option value="PHP">PHP</option>
+                <option value="THB">THB</option>
+</select>
             </div>
             <div class="field">
               <label>Tax rate</label>
@@ -1353,7 +1403,8 @@ input:focus:not(:focus-visible) {
     <div class="form-error-banner" id="clientErrors"></div>
     <div class="field"><label>Name / company</label><input id="mName"></div>
     <div class="field"><label>Email</label><input id="mEmail"></div>
-    <div class="field"><label>Tax ID / VAT / ABN (optional)</label><input id="mTaxId" placeholder="Client tax ID if needed"></div>
+    <div class="field"><label>Billing address</label><textarea id="mAddress" rows="2" placeholder="Street, city, postcode, country"></textarea></div>
+    <div class="field"><label>Tax ID (optional)</label><input id="mTaxId" placeholder="Client tax / VAT / ABN / EIN"></div>
     <div class="buttons" style="justify-content:flex-end;margin-top:20px;gap:10px">
       <button class="button" id="cancel">Cancel</button>
       <button class="button primary" id="confirm">Save client</button>
@@ -1410,7 +1461,13 @@ if (db.profile) {
 let edit = null;
 let editingClientId = null;
 let pendingConfirm = null;
-const fx = { USD: 1, EUR: 1.08, GBP: 1.27, AUD: 0.66, NGN: 0.00067 };
+const fx = {
+  USD: 1, EUR: 1.08, GBP: 1.27, AUD: 0.66, CAD: 0.74, NZD: 0.60,
+  CHF: 1.12, JPY: 0.0067, CNY: 0.14, HKD: 0.13, SGD: 0.74,
+  INR: 0.012, NGN: 0.00067, ZAR: 0.055, KES: 0.0078, GHS: 0.066,
+  AED: 0.27, SAR: 0.27, SEK: 0.095, NOK: 0.092, DKK: 0.145,
+  PLN: 0.25, BRL: 0.18, MXN: 0.058, PHP: 0.017, THB: 0.028
+};
 
 function suggestTaxForCurrency(code) {
   const map = {
@@ -1464,7 +1521,9 @@ function total(i) {
   return sub(i) + tax(i);
 }
 function report(i) {
-  return total(i) * fx[i.currency] / fx[db.profile.reporting];
+  const from = fx[i.currency] ?? 1;
+  const to = fx[db.profile.reporting] ?? 1;
+  return total(i) * from / to;
 }
 function formatRate(x) {
   const n = parseFloat(x);
@@ -1476,7 +1535,7 @@ function money(x, c) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: c || db.profile.reporting,
-    maximumFractionDigits: c === 'NGN' ? 0 : 2
+    maximumFractionDigits: ['JPY','NGN'].includes(c) ? 0 : 2
   }).format(x || 0);
 }
 function toast(msg) {
@@ -1637,7 +1696,7 @@ function clients() {
       <tr>
         <th>Client</th>
         <th>Email</th>
-        <th>Tax ID</th>
+        <th>Address</th>
         <th class="right">Invoices</th>
         <th class="right">Actions</th>
       </tr>
@@ -1648,7 +1707,7 @@ function clients() {
         return `<tr>
           <td><b>${c.name}</b></td>
           <td>${c.email || '—'}</td>
-          <td>${c.taxId || '—'}</td>
+          <td style="max-width:180px;white-space:pre-line;font-size:12px;color:var(--muted)">${c.address || '—'}</td>
           <td class="right">${count}</td>
           <td class="actions">
             <button class="button small" data-edit-client="${c.id}">Edit</button>
@@ -1760,7 +1819,7 @@ function preview() {
   const p = db.profile;
   $('#pBusiness').textContent = p.name || 'Your Company';
   const contactBits = [p.email, p.phone, p.address].filter(Boolean);
-  if (p.taxId) contactBits.push((p.taxLabel || 'Tax ID') + ': ' + p.taxId);
+  if (p.taxId) contactBits.push((p.taxLabel || 'Tax') + ' no.: ' + p.taxId);
   $('#pContact').textContent = contactBits.join('\n');
   $('#pLogo').style.display = p.logo ? 'block' : 'none';
   $('#pLogo').src = p.logo || '';
@@ -1769,16 +1828,17 @@ function preview() {
   const pIssue = document.getElementById('pIssue');
   if (pIssue) pIssue.textContent = issueLabel ? ('Issued ' + issueLabel) : '';
   $('#pClient').textContent = c?.name || 'Client';
-  // client tax id line
+  // Billing address under Bill to (no tax ID here)
   let billExtra = document.getElementById('pClientTax');
   if (!billExtra) {
     billExtra = document.createElement('div');
     billExtra.id = 'pClientTax';
-    billExtra.style.cssText = 'font-size:11px;color:var(--muted);margin-top:2px';
+    billExtra.style.cssText = 'font-size:11px;color:var(--muted);margin-top:2px;white-space:pre-line';
     const billTo = $('#pClient')?.parentElement;
     if (billTo) billTo.appendChild(billExtra);
   }
-  billExtra.textContent = c?.taxId ? ((db.profile.taxLabel || 'Tax ID') + ': ' + c.taxId) : '';
+  const addr = (c?.address || '').trim();
+  billExtra.textContent = addr;
 
   $('#pDue').textContent = new Date(edit.due + 'T12:00:00').toLocaleDateString();
   $('#pTitle').textContent = edit.title || 'Your invoice title';
@@ -2072,6 +2132,7 @@ function openClientModal(client) {
   $('#mName').value = client?.name || '';
   $('#mEmail').value = client?.email || '';
   $('#mTaxId').value = client?.taxId || '';
+  $('#mAddress').value = client?.address || '';
   $('#confirm').textContent = client ? 'Update client' : 'Save client';
   clearInvalid(document.getElementById('modal'));
   showBanner('clientErrors', []);
@@ -2104,9 +2165,11 @@ $('#confirm').onclick = () => {
     toast(errors[0]);
     return;
   }
+  const address = ($('#mAddress')?.value || '').trim();
   const payload = {
     name: n,
     email,
+    address,
     taxId
   };
   if (editingClientId) {
@@ -2120,6 +2183,7 @@ $('#confirm').onclick = () => {
   save();
   editingClientId = null;
   $('#mName').value = $('#mEmail').value = $('#mTaxId').value = '';
+  if ($('#mAddress')) $('#mAddress').value = '';
   $('#modal').classList.remove('show');
   clients();
   // Refresh client dropdown if editor is open
@@ -2305,6 +2369,25 @@ async function syncProfile(client, user) {
     };
   }
 })();
+
+function printInvoice() {
+  // Must show invoice preview; switch to editor if we have an open invoice
+  if (!edit) {
+    toast('Open an invoice first to print.');
+    return;
+  }
+  const prevTitle = document.title;
+  document.title = edit.number || 'Invoice';
+  // Ensure editor + preview visible for print CSS
+  switchTo('editor');
+  const panel = document.getElementById('previewPanel');
+  if (panel) panel.classList.add('show-mobile');
+  // Allow layout to settle
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => { document.title = prevTitle; }, 300);
+  }, 50);
+}
 
 /* Init */
 switchTo('dashboard');
